@@ -7,6 +7,7 @@ import LandingPage from './pages/Public/LandingPage'
 import Dashboard from './pages/Patient/Dashboard'
 import MyAppointments from './pages/Patient/MyAppointments'
 import BookingPage from './pages/Patient/BookingPage'
+import CenterDetails from './pages/Patient/CenterDetails'
 // import { Toaster } from 'react-hot-toast'
 
 
@@ -21,6 +22,7 @@ function App() {
         <Route path='/dashboard' element={< Dashboard/>} />
         <Route path='/myappointments' element={< MyAppointments/>} />
         <Route path='/bookappointment' element={< BookingPage/>} />
+        <Route path='/center/:center_id' element={< CenterDetails/>} />
       </Routes>
 
       {/* <Footer /> */}

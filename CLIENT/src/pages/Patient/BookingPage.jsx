@@ -50,7 +50,7 @@ export default function BookingPage() {
     <>
       <Navbar />
 
-      <div className="grid lg:grid-cols-[320px_1fr] gap-6 mt-5">
+      <div className="grid lg:grid-cols-[320px_1fr] gap-6 bg-teal-50">
         <FiltersSidebar onChange={setFilters} />
 
         {/* MAIN CONTENT */}

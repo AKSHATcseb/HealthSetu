@@ -26,7 +26,7 @@ export default function FiltersSidebar({ onChange }) {
   };
 
   return (
-    <aside className="w-full lg:w-80 bg-gray-50 rounded-3xl p-5 sticky top-24">
+    <aside className="w-full lg:w-80  rounded-3xl p-5 sticky top-24">
       {/* Header */}
       <div className="flex justify-between items-center mb-5">
         <div className="flex items-center gap-2 font-semibold text-gray-800">

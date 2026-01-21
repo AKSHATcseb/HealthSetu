@@ -10,7 +10,7 @@ export default function RecommendationCard() {
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="
         bg-white rounded-3xl p-5
-        flex gap-6 items-center
+        flex gap-6 mt-5 mr-5 items-center
         shadow-[0_10px_30px_-15px_rgba(0,0,0,0.25)]
       "
         >
