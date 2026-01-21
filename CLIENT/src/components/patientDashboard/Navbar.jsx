@@ -1,21 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function Navbar() {
-  return (
-    <nav className="flex items-center justify-between px-8 py-4 border-b bg-white">
-      <h1 className="text-xl font-bold text-teal-700">HealthSetu</h1>
+  const [active, setActive] = useState("Dashboard");
 
+  const navItems = ["Dashboard", "Appointments", "Profile"];
+
+  return (
+    <nav className="flex items-center justify-between px-8 py-4 border-b border-teal-100 bg-white font-Outfit">
+      
+      {/* Logo */}
+      <h1 className="text-xl font-bold text-teal-700 cursor-pointer">
+        HealthSetu
+      </h1>
+
+      {/* Navigation */}
       <div className="flex gap-8 text-gray-600 font-medium">
-        <span className="text-teal-700 border-b-2 border-teal-700">
-          Dashboard
-        </span>
-        <span>Appointments</span>
-        <span>Profile</span>
+        {navItems.map((item) => (
+          <button
+            key={item}
+            onClick={() => setActive(item)}
+            className={`pb-1 transition-all cursor-pointer
+              ${
+                active === item
+                  ? "text-teal-700 border-b-2 border-teal-700"
+                  : "hover:text-teal-600"
+              }`}
+          >
+            {item}
+          </button>
+        ))}
       </div>
 
+      {/* Right Actions */}
       <div className="flex items-center gap-4">
-        <button className="text-gray-500">🔔</button>
-        <button className="px-4 py-2 border rounded-lg">Logout</button>
+        <button className="text-gray-500 cursor-pointer hover:text-teal-600 transition">
+          🔔
+        </button>
+        <button className="px-4 py-2 border rounded-lg cursor-pointer hover:border-teal-600 hover:text-teal-600 transition">
+          Logout
+        </button>
       </div>
     </nav>
   );

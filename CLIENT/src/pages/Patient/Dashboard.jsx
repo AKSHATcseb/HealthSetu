@@ -10,20 +10,24 @@ import HealthTip from "../../components/patientDashboard/HealthTip";
 export default function Dashboard() {
   return (
     <>
-      <Navbar />
-      <HeroSearch />
-      <Filters />
+        <Navbar />
+      <div className="px-10 bg-teal-50">
+        <HeroSearch />
 
-      <div className="grid md:grid-cols-3 gap-8 px-8 py-10">
-        <div className="md:col-span-2 space-y-6">
-          <h2 className="font-bold text-lg">Top AI Recommendation</h2>
-          <RecommendationCard />
-        </div>
+        <div className="grid md:grid-cols-3 gap-8 px-8 py-10">
+          <div className="md:col-span-2 space-y-6">
+            <h2 className="font-bold text-lg">Top AI Recommendation</h2>
+            <RecommendationCard />
+            <RecommendationCard />
+            <RecommendationCard />
+            <RecommendationCard />
+          </div>
 
-        <div className="space-y-6">
-          <LocationCard />
-          <RecentSearches />
-          <HealthTip />
+          <div className="space-y-6">
+            <LocationCard />
+            <RecentSearches />
+            <HealthTip />
+          </div>
         </div>
       </div>
     </>
