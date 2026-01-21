@@ -8,6 +8,7 @@ const MyAppointments = () => {
   return (
     <>
       <Navbar />
+      
       <div className='px-10 bg-teal-50 py-5'>
         <PageHeader />
         <AppointmentCard status="upcoming" />

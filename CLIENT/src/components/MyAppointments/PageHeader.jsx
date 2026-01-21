@@ -17,8 +17,12 @@ export default function PageHeader({ onFilterChange }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20 }}   // start below
+      animate={{ opacity: 1, y: 0 }}    // move up into place
+      transition={{
+        duration: 0.4,
+        ease: "easeOut",
+      }}
       className="flex flex-col gap-4 py-5 px-5 font-Raleway"
     >
       {/* Top Row */}

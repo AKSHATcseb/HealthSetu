@@ -5,8 +5,8 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/Public/LandingPage'
 import Dashboard from './pages/Patient/Dashboard'
-import BookingScreen from './pages/Patient/BookingScreen'
 import MyAppointments from './pages/Patient/MyAppointments'
+import BookingPage from './pages/Patient/BookingPage'
 // import { Toaster } from 'react-hot-toast'
 
 
@@ -20,6 +20,7 @@ function App() {
         <Route path='/' element={< LandingPage/>} />
         <Route path='/dashboard' element={< Dashboard/>} />
         <Route path='/myappointments' element={< MyAppointments/>} />
+        <Route path='/bookappointment' element={< BookingPage/>} />
       </Routes>
 
       {/* <Footer /> */}

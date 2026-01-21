@@ -21,11 +21,8 @@ export default function Navbar() {
 
       {/* Actions */}
       <div className="flex gap-4">
-        <button className="hidden sm:block text-gray-600 cursor-pointer hover:text-teal-600">
+        <button className="bg-teal-600 text-white py-2 rounded-full cursor-pointer hover:bg-teal-700 px-10">
           Log in
-        </button>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-full cursor-pointer hover:bg-teal-700">
-          Get Started
         </button>
       </div>
     </nav>

@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 const statusStyles = {
   upcoming: {
@@ -21,6 +22,14 @@ export default function AppointmentCard({
   const s = statusStyles[status];
 
   return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}   // start below
+      animate={{ opacity: 1, y: 0 }}    // move up into place
+      transition={{
+        duration: 0.4,
+        ease: "easeOut",
+      }}
+    >
     <div
       className={`
        my-5 bg-white rounded-3xl p-6
@@ -87,10 +96,11 @@ export default function AppointmentCard({
       <div className="w-full lg:w-80 h-48 rounded-2xl overflow-hidden border">
         <iframe
           title="map"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26604.674007382077!2d77.12799016065016!3d28.72860421432223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d01ea1adeaa4d%3A0x6adf0aec6fc00a2c!2sJahangirpuri%2C%20Delhi%2C%20India!5e1!3m2!1sen!2sus!4v1769014323597!5m2!1sen!2sus"
+          src="https://maps.google.com/maps?q=28.728604,77.127990&z=15&output=embed"
           className="w-full h-full"
         />
       </div>
     </div>
+  </motion.div>
   );
 }
