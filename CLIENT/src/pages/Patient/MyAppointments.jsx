@@ -10,7 +10,6 @@ import PastAppointmentCard from '../../components/MyAppointments/PastAppointment
 const MyAppointments = () => {
   return (
     <div>
-      <Navbar/>
       <AppointmentsPage/>
       <PageHeader/>
       <UpcomingAppointments/>
