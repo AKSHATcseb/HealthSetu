@@ -4,9 +4,11 @@ import React from "react";
 export default function Navbar() {
   return (
     <nav className="w-full px-20 py-4 flex items-center justify-between bg-white shadow-sm">
-      {/* Logo */}
-      <div className="text-xl font-bold text-teal-600 cursor-pointer">
+      <div className="flex justify-center items-center gap-2">
+      <img className="w-10" src="src\assets\images\logo.jpg" alt="" />
+      <h1 className="text-2xl font-bold text-teal-700 cursor-pointer">
         HealthSetu
+      </h1>
       </div>
 
       {/* Nav Links */}

@@ -1,29 +1,75 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 
-export default function PageHeader() {
+const filters = [
+  { key: "upcoming", label: "Upcoming" },
+  { key: "completed", label: "Completed" },
+  { key: "pending", label: "Pending" },
+];
+
+export default function PageHeader({ onFilterChange }) {
+  const [activeFilter, setActiveFilter] = useState("upcoming");
+
+  const handleFilter = (filter) => {
+    setActiveFilter(filter);
+    onFilterChange?.(filter);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col md:flex-row md:items-center md:justify-between mb-8"
+      className="flex flex-col gap-4 py-5 px-5 font-Raleway"
     >
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          My Appointments
-        </h1>
-        <p className="text-gray-500 mt-1">
-          Manage your upcoming and past dialysis sessions.
-        </p>
+      {/* Top Row */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold text-gray-900">
+            My Appointments
+          </h1>
+        </div>
+
+        <div className="flex gap-3">
+          {/* Filter Tabs */}
+          <div className="flex gap-3 flex-wrap rounded-full bg-teal-600 p-1">
+            {filters.map((filter) => {
+              const isActive = activeFilter === filter.key;
+
+              return (
+                <motion.button
+                  key={filter.key}
+                  onClick={() => handleFilter(filter.key)}
+                  whileTap={{ scale: 0.95 }}
+                  className={`
+                px-5 py-2 rounded-full text-sm font-medium
+                cursor-pointer
+                transition-all duration-300
+                ${isActive
+                      ? "bg-white text-teal-600 shadow"
+                      : " text-white hover:bg-white hover:text-teal-600"
+                    }
+              `}
+                >
+                  {filter.label}
+                </motion.button>
+              );
+            })}
+          </div>
+
+          <button
+            className="
+              px-10 py-2 bg-teal-600 text-white
+              cursor-pointer rounded-full
+              transition hover:bg-teal-700
+              font-bold
+            "
+          >
+            + Book New
+          </button>
+        </div>
       </div>
 
-      <div className="flex gap-3 mt-4 md:mt-0">
-        <button className="px-4 py-2 border rounded-lg hover:border-blue-500 transition">
-          ⚙ Filter
-        </button>
-        <button className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-          + Book New
-        </button>
-      </div>
+
     </motion.div>
   );
 }

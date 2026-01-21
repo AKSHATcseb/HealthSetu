@@ -6,12 +6,15 @@ export default function Navbar() {
   const navItems = ["Dashboard", "Appointments", "Profile"];
 
   return (
-    <nav className="flex items-center justify-between px-8 py-4 border-b border-teal-100 bg-white font-Outfit">
+    <nav className="flex items-center justify-between px-12 py-4 border-b border-teal-100 bg-white font-Outfit">
       
       {/* Logo */}
-      <h1 className="text-xl font-bold text-teal-700 cursor-pointer">
+      <div className="flex justify-center items-center gap-2">
+      <img className="w-10" src="src\assets\images\logo.jpg" alt="" />
+      <h1 className="text-2xl font-bold text-teal-700 cursor-pointer">
         HealthSetu
       </h1>
+      </div>
 
       {/* Navigation */}
       <div className="flex gap-8 text-gray-600 font-medium">

@@ -21,7 +21,7 @@ export default function PastAppointmentCard({
       </div>
 
       {feedback && (
-        <button className="px-4 py-2 border rounded-lg hover:border-blue-600 hover:text-blue-600 transition">
+        <button className="px-4 py-2 border rounded-lg hover:border-teal-600 hover:text-teal-600 transition cursor-pointer">
           ✍ Give Feedback
         </button>
       )}
