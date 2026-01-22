@@ -1,7 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+
 
 export default function RecommendationCard() {
+  const navigate = useNavigate();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -42,6 +45,7 @@ export default function RecommendationCard() {
         {/* Buttons */}
         <div className="mt-5 flex gap-4 justify-end">
           <motion.button
+            onClick={() => navigate("/center/1")}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="px-5 py-2 bg-gray-200 rounded-lg
@@ -51,6 +55,10 @@ export default function RecommendationCard() {
           </motion.button>
 
           <motion.button
+            onClick={() => {
+              navigate("/bookappointment");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="px-20 py-2 bg-teal-600 text-white rounded-lg

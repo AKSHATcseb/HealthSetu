@@ -1,7 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function RecommendationCard() {
+    const navigate = useNavigate();
     return (
         <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -78,6 +80,7 @@ export default function RecommendationCard() {
                     <div className="flex justify-center items-center gap-5">
                         <div className="flex items-end">
                             <motion.button
+                                onClick={() => navigate("/center/1")}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="

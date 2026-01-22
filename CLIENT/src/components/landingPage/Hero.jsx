@@ -1,7 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 // components/Hero.jsx
 export default function Hero() {
+  const navigate = useNavigate();
   return (
     <section className="px-20 py-16 grid md:grid-cols-2 gap-6 items-center bg-green-50">
       <div className="">
@@ -18,34 +20,6 @@ export default function Hero() {
           Revolutionizing dialysis management with proactive monitoring
           and seamless care coordination designed for patients and families.
         </p>
-
-        <div className="mt-6 flex flex-wrap gap-4">
-          {/* Primary CTA */}
-          <button
-            className="
-              bg-teal-600 text-white px-6 py-3 rounded-full
-              cursor-pointer
-              transition-all duration-300
-              hover:bg-teal-700 hover:scale-105 hover:shadow-lg
-              active:scale-95
-            "
-          >
-            Start Free Trial
-          </button>
-
-          {/* Secondary CTA */}
-          <button
-            className="
-              border border-gray-300 px-6 py-3 rounded-full
-              cursor-pointer
-              transition-all duration-300
-              hover:bg-gray-100 hover:border-teal-600 hover:text-teal-600
-              active:scale-95
-            "
-          >
-            See how it works
-          </button>
-        </div>
       </div>
 
       <img

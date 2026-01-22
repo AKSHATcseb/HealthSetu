@@ -4,7 +4,7 @@ export default function SidebarInfo() {
       {/* Map */}
       <div className="bg-white rounded-2xl p-5 shadow-sm">
         <h3 className="font-semibold mb-3">Easy Navigation</h3>
-        <button className="w-full border rounded-lg py-2 hover:border-teal-600 hover:text-teal-600 transition">
+        <button className="bg-gray-200 w-full rounded-lg py-2 hover:bg-gray-300 transition">
           Get Directions
         </button>
       </div>

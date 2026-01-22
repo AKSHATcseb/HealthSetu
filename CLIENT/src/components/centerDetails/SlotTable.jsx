@@ -6,14 +6,14 @@ export default function SlotTable() {
   ];
 
   return (
-    <div>
+    <div className="px-2 rounded-2xl py-4">
       <h2 className="text-xl font-bold mb-4">Upcoming Slots</h2>
 
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-gray-200 rounded-2xl shadow-sm overflow-hidden">
         {slots.map((slot, i) => (
           <div
             key={i}
-            className="flex items-center justify-between px-5 py-4 border-b last:border-none"
+            className="flex items-center justify-between px-5 py-4"
           >
             <div>
               <p className="font-semibold">{slot.time}</p>

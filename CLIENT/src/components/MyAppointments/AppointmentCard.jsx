@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const statusStyles = {
   upcoming: {
@@ -78,18 +79,7 @@ export default function AppointmentCard({
         </div>
 
         {/* Action */}
-        <button
-          className="
-            mt-6 inline-flex items-center gap-2
-            bg-teal-600 text-white px-6 py-2.5 rounded-full
-            font-medium cursor-pointer
-            transition-all duration-300
-            hover:bg-teal-700 hover:scale-105
-            active:scale-95
-          "
-        >
-          View Details →
-        </button>
+        
       </div>
 
       {/* MAP PREVIEW */}

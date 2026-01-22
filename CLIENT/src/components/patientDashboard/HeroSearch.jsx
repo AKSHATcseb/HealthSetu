@@ -1,7 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function HeroSection() {
+  const navigate = useNavigate();
   return (
     <section className="w-full">
       <div className=" mx-auto px-10 pt-16 pb-12">
@@ -45,7 +47,9 @@ export default function HeroSection() {
               placeholder="I need dialysis tomorrow, cheap and nearby..."
               className="flex-1 px-4 py-3 text-gray-700 outline-none"
             />
-            <button className="bg-teal-600 hover:bg-teal-700 transition-all
+            <button
+            onClick={() => navigate("/bookappointment")}
+            className="bg-teal-600 hover:bg-teal-700 transition-all
                                text-white px-6 py-3 rounded-xl font-medium">
               Search →
             </button>

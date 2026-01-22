@@ -1,7 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 // components/CTA.jsx
 export default function CTA() {
+  const navigate = useNavigate()
   return (
     <section className="py-20 px-20">
       <div
@@ -23,6 +25,7 @@ export default function CTA() {
         <div className="mt-8 flex justify-center gap-4 flex-wrap">
           {/* Primary CTA */}
           <button
+          onClick={() => navigate("/dashboard")}
             className="
               bg-white text-teal-700 px-8 py-3 rounded-full
               font-semibold

@@ -8,6 +8,7 @@ import Dashboard from './pages/Patient/Dashboard'
 import MyAppointments from './pages/Patient/MyAppointments'
 import BookingPage from './pages/Patient/BookingPage'
 import CenterDetails from './pages/Patient/CenterDetails'
+import CenterDashboard from './pages/Center/CenterDashboard'
 // import { Toaster } from 'react-hot-toast'
 
 
@@ -23,6 +24,7 @@ function App() {
         <Route path='/myappointments' element={< MyAppointments/>} />
         <Route path='/bookappointment' element={< BookingPage/>} />
         <Route path='/center/:center_id' element={< CenterDetails/>} />
+        <Route path='/centerdashboard' element={< CenterDashboard/>} />
       </Routes>
 
       {/* <Footer /> */}
