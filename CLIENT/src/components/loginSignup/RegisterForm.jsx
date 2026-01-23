@@ -1,7 +1,7 @@
 import { useState } from "react";
 import RoleSelector from "./RoleSelector";
 import PatientDetailsForm from "./PatientDetailsForm";
-import CenterDetailsForm from "./CenterDetailsForm";
+import CenterDetailsForm from "./CenterVerificationForm";
 
 export default function RegisterForm({ onSwitch }) {
   const [role, setRole] = useState(null);

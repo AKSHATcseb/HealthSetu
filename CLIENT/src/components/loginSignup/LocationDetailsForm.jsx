@@ -1,4 +1,57 @@
+import { useState } from "react";
+
 export default function LocationDetailsForm() {
+  const [formData, setFormData] = useState({
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+    mapLink: "",
+    latitude: "",
+    longitude: "",
+  });
+
+  /* ---------- HELPERS ---------- */
+
+  const extractLatLng = (url) => {
+    try {
+      // Matches @lat,lng from Google Maps URL
+      const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+
+      if (match) {
+        return {
+          lat: match[1],
+          lng: match[2],
+        };
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  /* ---------- HANDLERS ---------- */
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleMapLinkChange = (e) => {
+    const link = e.target.value;
+    const coords = extractLatLng(link);
+
+    setFormData((prev) => ({
+      ...prev,
+      mapLink: link,
+      latitude: coords ? coords.lat : "",
+      longitude: coords ? coords.lng : "",
+    }));
+  };
+
   return (
     <div className="space-y-4">
       <h4 className="font-medium text-gray-800">
@@ -7,30 +60,67 @@ export default function LocationDetailsForm() {
 
       <input
         type="text"
+        name="address"
         placeholder="Complete Address"
-        className="w-full px-4 py-3 bg-gray-200 text-gray-600 rounded-xl"
+        value={formData.address}
+        onChange={handleChange}
+        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
       />
 
       <input
         type="text"
+        name="city"
         placeholder="City / District"
-        className="w-full px-4 py-3 bg-gray-200 text-gray-600 rounded-xl"
+        value={formData.city}
+        onChange={handleChange}
+        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
       />
 
       <input
         type="text"
+        name="state"
         placeholder="State"
-        className="w-full px-4 py-3 bg-gray-200 text-gray-600 rounded-xl"
+        value={formData.state}
+        onChange={handleChange}
+        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
       />
 
       <input
         type="number"
+        name="pincode"
         placeholder="Pincode"
-        className="w-full px-4 py-3 bg-gray-200 text-gray-600 rounded-xl"
+        value={formData.pincode}
+        onChange={handleChange}
+        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
       />
 
+      {/* GOOGLE MAP LOCATION */}
+      {/* <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">
+          Google Maps Location
+        </label>
+
+        <input
+          type="url"
+          placeholder="Paste Google Maps location link"
+          value={formData.mapLink}
+          onChange={handleMapLinkChange}
+          className="w-full px-4 py-3 bg-gray-200 rounded-xl"
+        />
+
+        {formData.latitude && formData.longitude && (
+          <p className="text-xs text-teal-600">
+            📍 Location detected — Lat: {formData.latitude}, Lng: {formData.longitude}
+          </p>
+        )}
+
+        <p className="text-xs text-gray-500">
+          Paste the Google Maps link (Share → Copy link)
+        </p>
+      </div> */}
+
       <div className="bg-teal-50 text-teal-700 px-4 py-3 rounded-xl text-sm">
-        📍 Location will be auto-detected from map
+        📍 Location will be auto-detected from Google Maps link
       </div>
     </div>
   );
