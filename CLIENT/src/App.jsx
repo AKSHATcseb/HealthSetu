@@ -4,6 +4,7 @@ import './App.css'
 // import Footer from './components/Footer'
 import { Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/Public/LandingPage'
+import LoginSignup from './pages/Public/AuthPage'
 import Dashboard from './pages/Patient/Dashboard'
 import MyAppointments from './pages/Patient/MyAppointments'
 import BookingPage from './pages/Patient/BookingPage'
@@ -20,6 +21,7 @@ function App() {
 
       <Routes>
         <Route path='/' element={< LandingPage/>} />
+        <Route path='/loginsignup' element={< LoginSignup/>} />
         <Route path='/dashboard' element={< Dashboard/>} />
         <Route path='/myappointments' element={< MyAppointments/>} />
         <Route path='/bookappointment' element={< BookingPage/>} />

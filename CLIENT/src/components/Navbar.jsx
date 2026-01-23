@@ -17,7 +17,7 @@ export default function Navbar() {
       {/* Actions */}
       <div className="flex gap-4">
         <button
-        onClick={() => navigate("/dashboard")}
+        onClick={() => navigate("/loginsignup")}
         className="bg-teal-600 text-white py-2 rounded-full cursor-pointer hover:bg-teal-700 px-10">
           Log in
         </button>
