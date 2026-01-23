@@ -11,6 +11,8 @@ import BookingPage from './pages/Patient/BookingPage'
 import CenterDetails from './pages/Patient/CenterDetails'
 import CenterDashboard from './pages/Center/CenterDashboard'
 import CenterDetailsForm from './components/loginSignup/CenterDetailsForm'
+import BookingConfirmation from './pages/Patient/BookingConfirmation'
+import PatientProfile from './pages/Patient/PatientProfile'
 // import { Toaster } from 'react-hot-toast'
 
 
@@ -29,6 +31,8 @@ function App() {
         <Route path='/center/:center_id' element={< CenterDetails/>} />
         <Route path='/centerdashboard' element={< CenterDashboard/>} />
         <Route path='/centerdetailsform' element={< CenterDetailsForm/>} />
+        <Route path='/center/:center_id/bookingconfirmation' element={< BookingConfirmation/>} />
+        <Route path='/profile' element={< PatientProfile/>} />
       </Routes>
 
       {/* <Footer /> */}

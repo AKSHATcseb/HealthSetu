@@ -30,6 +30,30 @@ export default function PatientDetailsForm() {
         <option>Other</option>
       </select>
 
+      <input
+        type="text"
+        placeholder="Blood group"
+        className="w-full px-4 py-3 bg-gray-200 text-gray-600 rounded-xl"
+      />
+
+      <input
+        type="text"
+        placeholder="Emergency Person Contact Name"
+        className="w-full px-4 py-3 bg-gray-200 text-gray-600 rounded-xl"
+      />
+
+      <input
+        type="text"
+        placeholder="Relation"
+        className="w-full px-4 py-3 bg-gray-200 text-gray-600 rounded-xl"
+      />
+
+      <input
+        type="tel"
+        placeholder="Emergence Contact Number"
+        className="w-full px-4 py-3 bg-gray-200 text-gray-600 rounded-xl"
+      />
+
       <button className="w-full py-3 rounded-full bg-teal-600 text-white font-semibold">
         Complete Registration
       </button>

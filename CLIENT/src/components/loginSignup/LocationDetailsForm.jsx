@@ -94,31 +94,6 @@ export default function LocationDetailsForm() {
         className="w-full px-4 py-3 bg-gray-200 rounded-xl"
       />
 
-      {/* GOOGLE MAP LOCATION */}
-      {/* <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-700">
-          Google Maps Location
-        </label>
-
-        <input
-          type="url"
-          placeholder="Paste Google Maps location link"
-          value={formData.mapLink}
-          onChange={handleMapLinkChange}
-          className="w-full px-4 py-3 bg-gray-200 rounded-xl"
-        />
-
-        {formData.latitude && formData.longitude && (
-          <p className="text-xs text-teal-600">
-            📍 Location detected — Lat: {formData.latitude}, Lng: {formData.longitude}
-          </p>
-        )}
-
-        <p className="text-xs text-gray-500">
-          Paste the Google Maps link (Share → Copy link)
-        </p>
-      </div> */}
-
       <div className="bg-teal-50 text-teal-700 px-4 py-3 rounded-xl text-sm">
         📍 Location will be auto-detected from Google Maps link
       </div>
