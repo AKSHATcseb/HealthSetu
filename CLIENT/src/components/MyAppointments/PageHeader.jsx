@@ -59,17 +59,6 @@ export default function PageHeader({ onFilterChange }) {
               );
             })}
           </div>
-
-          <button
-            className="
-              px-10 py-2 bg-teal-600 text-white
-              cursor-pointer rounded-full
-              transition hover:bg-teal-700
-              font-bold
-            "
-          >
-            + Book New
-          </button>
         </div>
       </div>
 

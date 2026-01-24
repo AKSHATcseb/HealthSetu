@@ -2,6 +2,8 @@ import { useState } from "react";
 import LocationDetailsForm from "./LocationDetailsForm";
 import ComplianceForm from "./ComplianceForm";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { auth } from "../../firebase";
 
 const daysOfWeek = [
     "Monday",
@@ -50,20 +52,28 @@ export default function CenterDetailsForm() {
 
     /* ---------- SUBMIT ---------- */
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const token = await auth.currentUser.getIdToken();
+
         const payload = {
+            role: "center",
             ...formData,
-            timings: formData.emergency24x7
-                ? "24x7"
-                : `${formData.openingTime} - ${formData.closingTime}`,
         };
 
-        console.log("CENTER DATA 👉", payload);
-        // API call here
-    };
+        await axios.post(
+            "http://localhost:5000/api/auth/login",
+            payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
+        navigate("/centerdashboard");
+    };
     const navigate = useNavigate()
 
     return (
@@ -140,6 +150,74 @@ export default function CenterDetailsForm() {
                         className="w-full px-4 py-3 bg-gray-200 rounded-xl"
                     />
                 )}
+
+                {/* 24/7 EMERGENCY AVAILABILITY */}
+                <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-gray-700">
+                        24/7 Emergency Dialysis
+                    </h4>
+
+                    <div className="flex gap-4">
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setFormData((prev) => ({ ...prev, emergency24x7: true }))
+                            }
+                            className={`px-5 py-2 rounded-full font-medium transition
+        ${formData.emergency24x7
+                                    ? "bg-teal-600 text-white"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                }`}
+                        >
+                            Yes
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setFormData((prev) => ({ ...prev, emergency24x7: false }))
+                            }
+                            className={`px-5 py-2 rounded-full font-medium transition
+        ${!formData.emergency24x7
+                                    ? "bg-teal-600 text-white"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                }`}
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+
+                {/* CENTER RATING */}
+                <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-gray-700">
+                        Center Rating
+                    </h4>
+
+                    <div className="flex gap-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                                key={star}
+                                type="button"
+                                onClick={() =>
+                                    setFormData((prev) => ({ ...prev, rating: star }))
+                                }
+                                className={`w-10 h-10 rounded-full text-lg font-bold transition
+          ${formData.rating >= star
+                                        ? "bg-teal-600 text-white scale-105"
+                                        : "bg-gray-200 text-gray-500 hover:bg-gray-300"
+                                    }`}
+                            >
+                                ★
+                            </button>
+                        ))}
+                    </div>
+
+                    <p className="text-xs text-gray-500">
+                        Selected rating: {formData.rating || "Not rated"}
+                    </p>
+                </div>
+
 
                 {/* WORKING DAYS */}
                 <div className="space-y-3">
@@ -248,7 +326,7 @@ export default function CenterDetailsForm() {
 
                 {/* SUBMIT */}
                 <button
-                onClick={() => navigate('/centerdashboard')}
+                    onClick={() => navigate('/centerdashboard')}
                     type="submit"
                     className="w-full bg-teal-600 text-white py-3 rounded-xl font-medium"
                 >

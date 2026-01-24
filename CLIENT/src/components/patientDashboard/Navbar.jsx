@@ -1,14 +1,15 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams  } from "react-router-dom"; 
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const { pid } = useParams();
 
   const navItems = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Appointments", path: "/myappointments" },
-    { name: "Booking", path: "/bookappointment" },
-    { name: "Profile", path: "/profile" },
+    { name: "Dashboard", path: `/patient/${pid}/dashboard` },
+    { name: "Appointments", path: `/patient/${pid}/myappointments` },
+    { name: "Booking", path: `/patient/${pid}/bookappointment` },
+    { name: "Profile", path: `/patient/${pid}/profile` },
   ];
 
   return (

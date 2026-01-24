@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Health Setu – Email Auth Tester</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+</head>
+
+<body style="font-family: Arial; padding: 20px">
+
+    <h2>🔐 Health Setu - Email Login (Tester)</h2>
+
+    <input id="email" placeholder="Email" />
+    <br /><br />
+    <input id="password" type="password" placeholder="Password" />
+    <br /><br />
+
+    <button onclick="login()">Login / Register</button>
+
+    <hr />
+
+    <h3>Firebase ID Token</h3>
+    <textarea id="token" rows="6" cols="80"></textarea>
+
+    <script>
+        // 🔥 Firebase Web Config (PASTE YOURS)
+        const firebaseConfig = {
+            
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(userCred => {
+                    if (!userCred.user.emailVerified) {
+                        alert("Please verify your email first.");
+                        userCred.user.sendEmailVerification();
+                        return;
+                    }
+                    showToken();
+                })
+                .catch(() => {
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .then(userCred => {
+                            userCred.user.sendEmailVerification();
+                            alert("Verification email sent. Please verify before login.");
+                        })
+                        .catch(err => alert(err.message));
+                });
+
+        }
+
+        function showToken() {
+            auth.currentUser.getIdToken().then(token => {
+                document.getElementById("token").value = token;
+                console.log("TOKEN:", token);
+                alert("Login successful. Copy token for Postman.");
+            });
+        }
+    </script>
+
+</body>
+
+</html>

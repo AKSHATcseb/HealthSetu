@@ -24,7 +24,6 @@ export default function CenterDetailsForm() {
       />
 
       <select className="w-full px-4 py-3 bg-gray-200 text-gray-600 rounded-xl">
-        <option>Center Type</option>
         <option>Government</option>
         <option>Private</option>
         <option>Trust</option>

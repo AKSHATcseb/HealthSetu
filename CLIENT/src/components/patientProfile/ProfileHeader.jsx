@@ -1,6 +1,9 @@
-import { User } from "lucide-react";
+import { User, Pencil } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export default function ProfileHeader() {
+export default function ProfileHeader({ patientName, pid }) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div className="flex items-center gap-4">
@@ -10,22 +13,27 @@ export default function ProfileHeader() {
 
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Patient Profile
+            {patientName}
           </h1>
           <p className="text-gray-500 text-sm">
-            View and manage your personal information
+            Patient Profile
           </p>
         </div>
       </div>
 
       <button
+        onClick={() => navigate(`/${pid}/profile/editprofile`)}
         className="
-          px-5 py-2 rounded-full
-          bg-teal-600 text-white
-          hover:bg-teal-700 transition
+          p-2.5 rounded-full
+          bg-white border border-teal-200
+          text-teal-700
+          hover:bg-teal-50 hover:border-teal-300
+          transition
+          shadow-sm
         "
+        title="Edit Profile"
       >
-        Edit Profile
+        <Pencil size={18} />
       </button>
     </div>
   );

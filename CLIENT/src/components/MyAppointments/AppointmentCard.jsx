@@ -99,7 +99,7 @@ export default function AppointmentCard({ status = "upcoming" }) {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/bookingconfirmation")}
+              onClick={() => navigate("/center/:centerid/bookingconfirmation")}
               className="
                 px-6 py-2 rounded-full text-sm font-semibold
                 border border-teal-600 text-teal-600

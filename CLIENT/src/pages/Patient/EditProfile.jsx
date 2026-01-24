@@ -2,9 +2,9 @@ import { auth } from "../../firebase";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import LocationDetailsForm from "./LocationDetailsForm";
+import LocationDetailsForm from "../../components/loginSignup/LocationDetailsForm";
 
-export default function PatientDetailsForm() {
+export default function EditProfile() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",

@@ -21,7 +21,14 @@ export default function SlotSelector({
   slotDuration = 60,
   onSelect,
 }) {
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
+
+  const categories = [
+    "General Dialysis (4 hrs)",
+    "Extended Dialysis (6 hrs)",
+    "Emergency Dialysis",
+  ];
 
   /* Generate slots only once */
   const slots = useMemo(() => {
@@ -36,32 +43,72 @@ export default function SlotSelector({
   }, [openingTime, closingTime, slotDuration]);
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm">
-      <h2 className="font-semibold text-lg mb-4">
-        Select Date & Time
-      </h2>
+    <div className="bg-white rounded-2xl p-5 shadow-sm space-y-6">
+      {/* Category Selection */}
+      <div>
+        <h2 className="font-semibold text-lg mb-4">
+          Select Category
+        </h2>
 
-      <div className="grid sm:grid-cols-3 gap-3">
-        {slots.map((slot) => (
-          <button
-            key={slot}
-            onClick={() => {
-              setSelectedSlot(slot);
-              onSelect?.(slot);
-            }}
-            className={`
-              py-3 rounded-xl border text-sm font-medium
-              transition cursor-pointer
-              ${
-                selectedSlot === slot
-                  ? "bg-teal-600 text-white border-teal-600"
-                  : "hover:border-teal-600 hover:bg-teal-50"
-              }
-            `}
-          >
-            {slot}
-          </button>
-        ))}
+        <div className="grid sm:grid-cols-3 gap-3">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => {
+                setSelectedCategory(category);
+                setSelectedSlot(null); // reset slot
+              }}
+              className={`
+                py-3 rounded-xl bg-gray-200 text-sm font-medium transition
+                ${
+                  selectedCategory === category
+                    ? "bg-teal-600 text-white border-teal-600"
+                    : "hover:border-teal-600 hover:bg-teal-50"
+                }
+              `}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Time Slot Selection */}
+      <div>
+        <h2 className="font-semibold text-lg mb-4">
+          Select Time Slot
+        </h2>
+
+        {!selectedCategory ? (
+          <p className="text-sm text-gray-500">
+            Please select a patient category first.
+          </p>
+        ) : (
+          <div className="grid sm:grid-cols-3 gap-3">
+            {slots.map((slot) => (
+              <button
+                key={slot}
+                onClick={() => {
+                  setSelectedSlot(slot);
+                  onSelect?.({
+                    category: selectedCategory,
+                    time: slot,
+                  });
+                }}
+                className={`
+                  py-3 rounded-xl border text-sm font-medium transition
+                  ${
+                    selectedSlot === slot
+                      ? "bg-teal-600 text-white border-teal-600"
+                      : "hover:border-teal-600 hover:bg-teal-50"
+                  }
+                `}
+              >
+                {slot}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
