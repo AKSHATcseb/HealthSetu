@@ -1,4 +1,0 @@
-apiKey: "AIzaSyD7d47zeDnE40ztpyGkJFeCZIep_qcCzG0",
-            authDomain: "healthsetu-8b5e3.firebaseapp.com",
-            projectId: "healthsetu-8b5e3",
-            appId: "1:41798937100:web:dc3e05e5b2f39850789c29",
