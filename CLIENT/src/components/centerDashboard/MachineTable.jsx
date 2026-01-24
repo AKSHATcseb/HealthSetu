@@ -1,11 +1,30 @@
-const statusBadge = (status) => {
-  const map = {
-    Available: "bg-green-100 text-green-600",
-    Occupied: "bg-red-100 text-red-600",
-    Maintenance: "bg-yellow-100 text-yellow-600",
+import { CheckCircle, XCircle, Cpu } from "lucide-react";
+
+const AvailabilityBadge = ({ status }) => {
+  const config = {
+    Available: {
+      bg: "bg-green-100",
+      text: "text-green-700",
+      icon: <CheckCircle size={14} />,
+    },
+    "Not Available": {
+      bg: "bg-red-100",
+      text: "text-red-700",
+      icon: <XCircle size={14} />,
+    },
   };
+
+  const s = config[status];
+
   return (
-    <span className={`px-3 py-1 rounded-full text-xs ${map[status]}`}>
+    <span
+      className={`
+        inline-flex items-center gap-2
+        px-4 py-1.5 rounded-full text-xs font-semibold
+        ${s.bg} ${s.text}
+      `}
+    >
+      {s.icon}
       {status}
     </span>
   );
@@ -13,31 +32,58 @@ const statusBadge = (status) => {
 
 const MachineTable = () => {
   return (
-    <div className="rounded-xl p-5 bg-gray-100">
-      <div className="flex justify-between mb-4">
-        <h3 className="font-semibold">Machine Availability</h3>
-        <button className="text-teal-600 text-sm">View All</button>
+    <div className="w-full bg-white rounded-3xl p-6 shadow-md">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-bold text-gray-900">
+            Dialysis Machines
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Live availability status of machines
+          </p>
+        </div>
       </div>
 
-      <table className="w-full text-sm">
-        <tbody>
-          {[
-            ["DM-001", "Available", "10 mins ago"],
-            ["DM-002", "Occupied", "1 hr ago"],
-            ["DM-003", "Maintenance", "2 days ago"],
-            ["DM-004", "Available", "5 mins ago"],
-          ].map((m) => (
-            <tr key={m[0]}>
-              <td className="py-3">{m[0]}</td>
-              <td>{statusBadge(m[1])}</td>
-              <td className="text-slate-500">{m[2]}</td>
-              <td>
-                <input type="checkbox" defaultChecked={m[1] !== "Maintenance"} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Table */}
+      <div className="space-y-3">
+        {[
+          { id: "DM-001", status: "Available" },
+          { id: "DM-002", status: "Not Available" },
+          { id: "DM-003", status: "Not Available" },
+          { id: "DM-004", status: "Available" },
+        ].map((machine) => (
+          <div
+            key={machine.id}
+            className="
+              flex items-center justify-between
+              bg-slate-50 rounded-2xl px-5 py-4
+              hover:bg-slate-100 transition
+              border-l-4
+              border-l-transparent hover:border-l-teal-500
+            "
+          >
+            {/* LEFT */}
+            <div className="flex items-center gap-4">
+              <div className="bg-teal-100 text-teal-700 p-2 rounded-xl">
+                <Cpu size={18} />
+              </div>
+
+              <div>
+                <p className="font-semibold text-gray-800">
+                  {machine.id}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Dialysis Machine
+                </p>
+              </div>
+            </div>
+
+            {/* RIGHT */}
+            <AvailabilityBadge status={machine.status} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

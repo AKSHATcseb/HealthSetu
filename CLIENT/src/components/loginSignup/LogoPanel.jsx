@@ -4,7 +4,7 @@ export default function LogoPanel() {
       <div
         className="
           w-full h-full
-          bg-gradient-to-br from-teal-600 to-teal-700
+          bg-linear-to-br from-teal-600 to-teal-700
           rounded-3xl
           flex flex-col items-center justify-center
           text-center
