@@ -26,4 +26,6 @@ const machineSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+machineSchema.index({ hospitalId: 1, machineNumber: 1 }, { unique: true });
+
 module.exports = mongoose.model("Machine", machineSchema);
