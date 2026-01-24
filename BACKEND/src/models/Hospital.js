@@ -12,7 +12,26 @@ const hospitalSchema = new mongoose.Schema(
       required: true,
     },
 
+    //regisration number of hospital
+    registrationNumber: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
+    //type of hospital
+    type: {
+      type: String,
+      enum: ["private", "government", "trust"],
+      required: true,
+    },
+
     phone: {
+      type: String,
+      required: true,
+    },
+
+    email: {
       type: String,
       required: true,
     },
@@ -36,19 +55,44 @@ const hospitalSchema = new mongoose.Schema(
       },
     },
 
-    totalMachines: {
+    totalMachines: { type: Number, default: 0 },
+
+    availableMachines: { type: Number, default: 0 },
+
+    costPerSession4h: {
       type: Number,
       required: true,
     },
 
-    availableMachines: {
+    costPerSession6h: {
       type: Number,
       required: true,
     },
 
-    costPerSession: {
+    //emergency services available or not
+    emergencyServices: {
+      type: Boolean,
+      default: false,
+    },
+
+    //emergency cost per session
+    emergencyCostPerSession: {
       type: Number,
-      required: true,
+      default: null,
+    },
+
+    //hospital 24/7 or specific working hours
+    is24x7: {
+      type: Boolean,
+      default: false,
+    },
+
+    //if not 24/7, then specify working hours
+    //open days and close days
+    workingDays: {
+      type: [String],
+      enum: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      default: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     },
 
     workingHours: {
@@ -56,15 +100,20 @@ const hospitalSchema = new mongoose.Schema(
       close: String, // "20:00"
     },
 
-    rating: {
-      type: Number,
-      default: 0,
-    },
-
+    rating: { type: Number, min: 0, max: 5 },
+    reviewCount: { type: Number, default: 0 },
+    
     isActive: {
       type: Boolean,
       default: true,
     },
+
+    // upi payment id for hospital payments
+    upiId: {
+      type: String,
+      default: null,
+    },
+
   },
   { timestamps: true }
 );

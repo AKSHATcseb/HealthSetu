@@ -21,17 +21,24 @@ const userSchema = new mongoose.Schema(
 
         phone: {
             type: String,
-            default: null,
+            unique: true,
+            sparse: true
         },
 
         email: {
             type: String,
+            unique: true,
+            sparse: true
         },
+
 
         age: {
             type: Number,
-            required: true,
+            required: function () {
+                return this.role === "patient";
+            },
         },
+
 
         weight: {
             type: Number,
@@ -51,14 +58,24 @@ const userSchema = new mongoose.Schema(
         },
 
         medicalInfo: {
-            bloodGroup: String,
+            bloodGroup: { type: String, default: null },
             dialysisType: {
                 type: String,
                 enum: ["hemodialysis", "peritoneal"],
+                default: null,
             },
         },
+
+        emergencyContact: {
+            name: String,
+            phone: String,
+            relation: String,
+        },
+
     },
     { timestamps: true }
 );
 
 module.exports = mongoose.model("User", userSchema);
+
+// emergency person name, phone, relation

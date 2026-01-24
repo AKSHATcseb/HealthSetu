@@ -8,8 +8,10 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", require("./routes/auth.routes"));
+app.use("/api/users", require("./routes/user.routes"));
 app.use("/api/hospitals", require("./routes/hospital.routes"));
 app.use("/api/machines", require("./routes/machine.routes"));
+app.use("/api/appointments", require("./routes/appointment.routes"));
 
 // Health check
 app.get("/", (req, res) => {
