@@ -4,10 +4,7 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-/*
- * ✅ GET Logged-in User Profile
- * GET /api/users/me
- */
+
 router.get("/me", verifyFirebaseToken, async (req, res) => {
   try {
     const user = await User.findOne({ firebaseUid: req.user.uid });
@@ -24,19 +21,19 @@ router.get("/me", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-/**
- * ✅ UPDATE Profile (Safe)
- * PUT /api/users/me
- */
+
 router.put("/me", verifyFirebaseToken, async (req, res) => {
   try {
     // Prevent updating sensitive fields
     delete req.body.role;
     delete req.body.firebaseUid;
+    delete req.body.email;
 
     const updatedUser = await User.findOneAndUpdate(
       { firebaseUid: req.user.uid },
-      req.body,
+      {
+        $set: req.body,
+      },
       { new: true, runValidators: true }
     );
 
@@ -49,10 +46,6 @@ router.put("/me", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-/**
- * ✅ UPDATE Medical Info
- * PUT /api/users/me/medical
- */
 router.put("/me/medical", verifyFirebaseToken, async (req, res) => {
   try {
     const { bloodGroup, dialysisType } = req.body;
@@ -77,10 +70,7 @@ router.put("/me/medical", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-/**
- * ✅ UPDATE Emergency Contact
- * PUT /api/users/me/emergency
- */
+
 router.put("/me/emergency", verifyFirebaseToken, async (req, res) => {
   try {
     const { name, phone, relation } = req.body;
@@ -90,6 +80,7 @@ router.put("/me/emergency", verifyFirebaseToken, async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     user.emergencyContact = { name, phone, relation };
+
     await user.save();
 
     res.json({
@@ -101,15 +92,13 @@ router.put("/me/emergency", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-/**
- * ❌ DELETE Profile (Optional)
- * DELETE /api/users/me
- */
 router.delete("/me", verifyFirebaseToken, async (req, res) => {
   try {
     await User.findOneAndDelete({ firebaseUid: req.user.uid });
 
-    res.json({ message: "User account deleted successfully" });
+    res.json({
+      message: "User account deleted successfully",
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
