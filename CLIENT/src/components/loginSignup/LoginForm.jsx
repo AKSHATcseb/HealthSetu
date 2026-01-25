@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
-import { getMe } from "../../services/userApi";
+import axios from "axios";
 
 export default function LoginForm() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -17,28 +18,51 @@ export default function LoginForm() {
       setLoading(true);
       setError(null);
 
-      // 1️⃣ Firebase login
+      // ✅ 1. Firebase Login
       const userCred = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
 
-      if (!userCred.user.emailVerified) {
+      const user = userCred.user;
+
+      // ✅ 2. Reload & Check Verification
+      await user.reload();
+
+      if (!user.emailVerified) {
         setError("Please verify your email before logging in.");
         return;
       }
 
-      // 2️⃣ Get backend profile
-      const token = await userCred.user.getIdToken();
-      const res = await getMe(token);
-      const user = res.data;
+      // ✅ 3. Generate Firebase Token
+      const token = await user.getIdToken(true);
 
-      // 3️⃣ Role-based redirect
-      if (user.role === "patient") {
-        navigate(`/patient/${user._id}/dashboard`, { replace: true });
-      } else if (user.role === "center") {
-        navigate(`/center/${user._id}/dashboard`, { replace: true });
+      // ✅ 4. Fetch Profile from Backend
+      const res = await axios.get(
+        "http://localhost:8080/api/users/me",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const profile = res.data;
+
+      console.log("✅ Logged-in User:", profile);
+
+      // ✅ 5. Redirect Based on Role
+      if (profile.role === "patient") {
+        navigate(`/patient/dashboard`, { replace: true });
+      }
+
+      else if (profile.role === "hospital_admin") {
+        navigate(`/center/${profile.id}/dashboard`, { replace: true });
+      }
+
+      else {
+        setError("Invalid role found. Contact support.");
       }
 
     } catch (err) {

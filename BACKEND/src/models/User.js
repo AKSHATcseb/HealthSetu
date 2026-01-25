@@ -21,7 +21,6 @@ const userSchema = new mongoose.Schema(
 
         phone: {
             type: String,
-            unique: true,
             sparse: true
         },
 
@@ -34,9 +33,9 @@ const userSchema = new mongoose.Schema(
 
         age: {
             type: Number,
-            required: function () {
-                return this.role === "patient";
-            },
+            // required: function () {
+            //     return this.role === "patient";
+            // },
         },
 
 

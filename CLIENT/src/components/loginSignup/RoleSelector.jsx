@@ -29,7 +29,7 @@ export default function RoleSelector({ role, setRole }) {
             }
           `}
         >
-          {r === "patient" ? "Patient" : "Dialysis Center"}
+          {r === "patient" ? "patient" : "hospital_admin"}
         </button>
       ))}
     </div>

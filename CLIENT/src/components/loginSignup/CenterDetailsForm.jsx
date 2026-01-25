@@ -6,229 +6,367 @@ import LocationDetailsForm from "./LocationDetailsForm";
 import ComplianceForm from "./ComplianceForm";
 
 const daysOfWeek = [
-    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+  "Monday", "Tuesday", "Wednesday",
+  "Thursday", "Friday", "Saturday", "Sunday",
 ];
 
 export default function CenterDetailsForm() {
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
-        centerName: "",
-        registrationNumber: "",
-        type: "",
-        email: "",
-        phone: "",
-        totalMachines: "",
-        costPerSession4h: "",
-        costPerSession6h: "",
-        emergencyService: false,
-        emergencyCostPerSession: "",
-        is24x7: false,
-        workingDays: [],
-        workingHours: {
-            open: "",
-            close: "",
-        },
-        upiId: "",
-        location: ""
-    });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    /* ---------------- HANDLERS ---------------- */
+  // ✅ SAME UI FORM STATE (Only corrected names)
+  const [formData, setFormData] = useState({
+    name: "",
+    registrationNumber: "",
+    type: "",
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData((p) => ({
-            ...p,
-            [name]: type === "checkbox" ? checked : value,
-        }));
-    };
+    email: "",
+    phone: "",
 
-    const toggleDay = (day) => {
-        setFormData((p) => ({
-            ...p,
-            workingDays: p.workingDays.includes(day)
-                ? p.workingDays.filter((d) => d !== day)
-                : [...p.workingDays, day],
-        }));
-    };
+    totalMachines: "",
+    costPerSession4h: "",
+    costPerSession6h: "",
 
-    /* ---------------- SUBMIT ---------------- */
+    emergencyServices: false,
+    emergencyCostPerSession: "",
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    is24x7: false,
+    workingDays: [],
+    workingHours: {
+      open: "",
+      close: "",
+    },
 
-        try {
-            setLoading(true);
-            setError(null);
+    upiId: "",
 
-            const user = auth.currentUser;
+    address: null,
+    location: null,
+  });
 
-            // 🔴 No user logged in
-            if (!user) {
-                setError("User not authenticated");
-                return;
-            }
+  /* ---------------- HANDLERS ---------------- */
 
-            // 🔴 Reload to get latest verification status
-            await user.reload();
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
 
-            // 🔴 Check email verified
-            if (!user.emailVerified) {
-                setError("Please verify your email before completing registration.");
-                setLoading(false);
-                return;
-            }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
-            // ✅ Now safe to continue
-            const token = await user.getIdToken();
+  const toggleDay = (day) => {
+    setFormData((prev) => ({
+      ...prev,
+      workingDays: prev.workingDays.includes(day)
+        ? prev.workingDays.filter((d) => d !== day)
+        : [...prev.workingDays, day],
+    }));
+  };
 
-            const res = await axios.post(
-                "http://localhost:8080/api/auth/login",
-                {
-                    role: "center",
-                    ...formData,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+  /* ---------------- SUBMIT ---------------- */
 
-            const center = res.data.user;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-            navigate(`/center/${center._id}/dashboard`, { replace: true });
+    try {
+      setLoading(true);
+      setError(null);
 
-        } catch (err) {
-            setError(
-                err.response?.data?.message ||
-                "Failed to save center details"
-            );
-        } finally {
-            setLoading(false);
+      const user = auth.currentUser;
+
+      if (!user) {
+        setError("User not logged in.");
+        return;
+      }
+
+      // ✅ Refresh verification status
+      await user.reload();
+
+      if (!user.emailVerified) {
+        setError("Please verify your email before registering center.");
+        return;
+      }
+
+      // ✅ Location required
+      if (!formData.location) {
+        setError("Please select your current GPS location.");
+        return;
+      }
+
+      const token = await user.getIdToken(true);
+
+      // ✅ FINAL Correct Payload for Hospital Schema
+      const payload = {
+        name: formData.name,
+        registrationNumber: formData.registrationNumber,
+        type: formData.type,
+
+        phone: formData.phone,
+        email: formData.email,
+
+        totalMachines: Number(formData.totalMachines),
+        availableMachines: Number(formData.totalMachines),
+
+        costPerSession4h: Number(formData.costPerSession4h),
+        costPerSession6h: Number(formData.costPerSession6h),
+
+        emergencyServices: formData.emergencyServices,
+        emergencyCostPerSession: formData.emergencyServices
+          ? Number(formData.emergencyCostPerSession)
+          : null,
+
+        is24x7: formData.is24x7,
+
+        workingDays: formData.is24x7 ? [] : formData.workingDays,
+
+        workingHours: formData.is24x7
+          ? { open: "00:00", close: "23:59" }
+          : formData.workingHours,
+
+        upiId: formData.upiId,
+
+        // ✅ LocationDetailsForm provides both
+        address: formData.address,
+        location: formData.location,
+      };
+
+      console.log("✅ Sending Hospital Payload:", payload);
+
+      // ✅ Correct API Endpoint
+      const res = await axios.post(
+        "http://localhost:8080/api/hospitals",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-    };
+      );
 
+      alert("✅ Center Registered Successfully!");
 
-    return (
-        <div className="min-h-screen bg-linear-to-br from-teal-50 to-slate-100 py-10 px-4 flex justify-center">
-            <form
-                onSubmit={handleSubmit}
-                className="w-full max-w-5xl bg-white rounded-3xl shadow-xl p-8 space-y-8"
+      navigate(`/center/dashboard`, { replace: true });
+
+    } catch (err) {
+      setError(err.response?.data?.message || "Center registration failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ---------------- UI (UNCHANGED) ---------------- */
+
+  return (
+    <div className="min-h-screen bg-linear-to-br from-teal-50 to-slate-100 py-10 px-4 flex justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-5xl bg-white rounded-3xl shadow-xl p-8 space-y-8"
+      >
+        {/* HEADER */}
+        <div className="border-b pb-4">
+          <h2 className="text-2xl font-bold text-slate-800">
+            Dialysis Center Profile
+          </h2>
+          <p className="text-sm text-slate-500 mt-1">
+            Provide accurate center details for patient trust & verification
+          </p>
+        </div>
+
+        {/* BASIC DETAILS */}
+        <section className="space-y-5">
+          <h3 className="section-title">Basic Information</h3>
+
+          <div className="grid md:grid-cols-2 gap-5">
+            <input
+              name="name"
+              placeholder="Center Name"
+              onChange={handleChange}
+              className="input"
+            />
+
+            <input
+              name="registrationNumber"
+              placeholder="Registration Number"
+              onChange={handleChange}
+              className="input"
+            />
+
+            <select
+              name="type"
+              onChange={handleChange}
+              className="input"
             >
-                {/* HEADER */}
-                <div className="border-b pb-4">
-                    <h2 className="text-2xl font-bold text-slate-800">
-                        Dialysis Center Profile
-                    </h2>
-                    <p className="text-sm text-slate-500 mt-1">
-                        Provide accurate center details for patient trust & verification
-                    </p>
-                </div>
+              <option value="">Select Hospital Type</option>
+              <option value="private">Private</option>
+              <option value="government">Government</option>
+              <option value="trust">Trust</option>
+            </select>
 
-                {/* BASIC DETAILS */}
-                <section className="space-y-5">
-                    <h3 className="section-title">Basic Information</h3>
+            <input
+              name="email"
+              placeholder="Contact Email"
+              onChange={handleChange}
+              className="input"
+            />
 
-                    <div className="grid md:grid-cols-2 gap-5">
-                        <input name="email" placeholder="Contact Email" onChange={handleChange} className="input" />
-                        <input name="phone" placeholder="Contact Phone Number" onChange={handleChange} className="input" />
-                        <input name="totalMachines" placeholder="Number of Dialysis Machines" onChange={handleChange} className="input" />
-                        <input name="costPerSession4h" placeholder="Cost per Session (3-4 hrs dialysis)" onChange={handleChange} className="input" />
-                        <input name="costPerSession6h" placeholder="Cost per Session (5-6 hrs dialysis)" onChange={handleChange} className="input" />
-                    </div>
-                </section>
+            <input
+              name="phone"
+              placeholder="Contact Phone Number"
+              onChange={handleChange}
+              className="input"
+            />
 
-                {/* EMERGENCY */}
-                <section className="space-y-4">
-                    <h3 className="section-title">Emergency Services</h3>
+            <input
+              name="totalMachines"
+              placeholder="Number of Dialysis Machines"
+              onChange={handleChange}
+              className="input"
+            />
 
-                    <label className="flex items-center gap-3 text-sm">
-                        <input type="checkbox" name="emergencyService" onChange={handleChange} />
-                        Emergency Dialysis Available
-                    </label>
+            <input
+              name="costPerSession4h"
+              placeholder="Cost per Session (4 hrs dialysis)"
+              onChange={handleChange}
+              className="input"
+            />
 
-                    {formData.emergencyService && (
-                        <input
-                            name="emergencyCostPerSession"
-                            placeholder="Emergency Cost per Session"
-                            onChange={handleChange}
-                            className="input"
-                        />
-                    )}
-                </section>
+            <input
+              name="costPerSession6h"
+              placeholder="Cost per Session (6 hrs dialysis)"
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+        </section>
 
-                <section className="space-y-4">
-                    <h3 className="section-title">Days & Timings</h3>
+        {/* EMERGENCY */}
+        <section className="space-y-4">
+          <h3 className="section-title">Emergency Services</h3>
 
-                    <label className="flex items-center gap-3 text-sm">
-                        <input type="checkbox" name="is24x7" onChange={handleChange} />
-                        24/7
-                    </label>
+          <label className="flex items-center gap-3 text-sm">
+            <input
+              type="checkbox"
+              name="emergencyServices"
+              onChange={handleChange}
+            />
+            Emergency Dialysis Available
+          </label>
 
-                    {!formData.is24x7 && (
-                        <section className="space-y-3">
-                            <div className="flex flex-wrap gap-3">
-                                {daysOfWeek.map((day) => (
-                                    <button
-                                        key={day}
-                                        type="button"
-                                        onClick={() => toggleDay(day)}
-                                        className={`pill ${formData.workingDays.includes(day) ? "pill-active" : ""}`}
-                                    >
-                                        {day}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-5">
-                                <input type="time" name="openingTime" onChange={handleChange} className="input" />
-                                <input type="time" name="closingTime" onChange={handleChange} className="input" />
-                            </div>
+          {formData.emergencyServices && (
+            <input
+              name="emergencyCostPerSession"
+              placeholder="Emergency Cost per Session"
+              onChange={handleChange}
+              className="input"
+            />
+          )}
+        </section>
 
-                        </section>
-                    )}
-                </section>
+        {/* DAYS & HOURS */}
+        <section className="space-y-4">
+          <h3 className="section-title">Days & Timings</h3>
 
-                {/* LOCATION + COMPLIANCE */}
-                <LocationDetailsForm
-                    onChange={(location) =>
-                        setFormData((p) => ({ ...p, location }))
-                    }
+          <label className="flex items-center gap-3 text-sm">
+            <input type="checkbox" name="is24x7" onChange={handleChange} />
+            24/7
+          </label>
+
+          {!formData.is24x7 && (
+            <section className="space-y-3">
+              <div className="flex flex-wrap gap-3">
+                {daysOfWeek.map((day) => (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => toggleDay(day)}
+                    className={`pill ${
+                      formData.workingDays.includes(day)
+                        ? "pill-active"
+                        : ""
+                    }`}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-5">
+                <input
+                  type="time"
+                  className="input"
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      workingHours: {
+                        ...prev.workingHours,
+                        open: e.target.value,
+                      },
+                    }))
+                  }
                 />
 
-                <ComplianceForm />
+                <input
+                  type="time"
+                  className="input"
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      workingHours: {
+                        ...prev.workingHours,
+                        close: e.target.value,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </section>
+          )}
+        </section>
 
-                {/* UPI */}
-                <section>
-                    <input
-                        name="upiId"
-                        placeholder="UPI ID / Payment Link"
-                        onChange={handleChange}
-                        className="input"
-                    />
-                </section>
+        {/* LOCATION */}
+        <LocationDetailsForm
+          onChange={(payload) =>
+            setFormData((prev) => ({
+              ...prev,
+              address: payload.address,
+              location: payload.location,
+            }))
+          }
+        />
 
-                {/* ERROR */}
-                {error && (
-                    <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg">
-                        {error}
-                    </p>
-                )}
+        <ComplianceForm />
 
-                {/* SUBMIT */}
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-4 rounded-full bg-linear-to-r from-teal-600 to-teal-700 text-white font-semibold text-lg disabled:opacity-60"
-                >
-                    {loading ? "Saving Center Profile..." : "Complete Registration"}
-                </button>
-            </form>
+        {/* UPI */}
+        <section>
+          <input
+            name="upiId"
+            placeholder="UPI ID / Payment Link"
+            onChange={handleChange}
+            className="input"
+          />
+        </section>
 
-            {/* Utility styles */}
-            <style>{`
+        {/* ERROR */}
+        {error && (
+          <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg">
+            {error}
+          </p>
+        )}
+
+        {/* SUBMIT */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-4 rounded-full bg-linear-to-r from-teal-600 to-teal-700 text-white font-semibold text-lg disabled:opacity-60"
+        >
+          {loading ? "Saving Center Profile..." : "Complete Registration"}
+        </button>
+      </form>
+
+      {/* SAME Utility styles */}
+      <style>{`
         .input {
           padding: 14px 16px;
           border-radius: 14px;
@@ -252,17 +390,7 @@ export default function CenterDetailsForm() {
           background: #14b8a6;
           color: white;
         }
-        .star {
-          width: 40px;
-          height: 40px;
-          border-radius: 9999px;
-          background: #e5e7eb;
-        }
-        .star-active {
-          background: #14b8a6;
-          color: white;
-        }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 }

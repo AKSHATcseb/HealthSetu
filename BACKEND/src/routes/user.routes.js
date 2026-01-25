@@ -24,18 +24,21 @@ router.get("/me", verifyFirebaseToken, async (req, res) => {
 
 router.put("/me", verifyFirebaseToken, async (req, res) => {
   try {
-    // Prevent updating sensitive fields
     delete req.body.role;
     delete req.body.firebaseUid;
     delete req.body.email;
 
     const updatedUser = await User.findOneAndUpdate(
       { firebaseUid: req.user.uid },
-      {
-        $set: req.body,
-      },
+      { $set: req.body },
       { new: true, runValidators: true }
     );
+    
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User not found. Please login first.",
+      });
+    }
 
     res.json({
       message: "Profile updated successfully",
