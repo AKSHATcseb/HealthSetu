@@ -5,7 +5,7 @@ const User = require("../models/User");
 const router = express.Router();
 
 /**
- * ✅ GET Logged-in User Profile
+ * ✅ GET Current Logged-in User Profile
  * GET /api/users/me
  */
 router.get("/me", verifyFirebaseToken, async (req, res) => {
@@ -25,18 +25,23 @@ router.get("/me", verifyFirebaseToken, async (req, res) => {
 });
 
 /**
- * ✅ UPDATE Profile (Safe)
+ * ✅ UPDATE Full Profile (Patient/Admin)
  * PUT /api/users/me
+ *
+ * Frontend will send full form data here.
  */
 router.put("/me", verifyFirebaseToken, async (req, res) => {
   try {
     // Prevent updating sensitive fields
     delete req.body.role;
     delete req.body.firebaseUid;
+    delete req.body.email;
 
     const updatedUser = await User.findOneAndUpdate(
       { firebaseUid: req.user.uid },
-      req.body,
+      {
+        $set: req.body,
+      },
       { new: true, runValidators: true }
     );
 
@@ -50,7 +55,7 @@ router.put("/me", verifyFirebaseToken, async (req, res) => {
 });
 
 /**
- * ✅ UPDATE Medical Info
+ * ✅ UPDATE Medical Info Only
  * PUT /api/users/me/medical
  */
 router.put("/me/medical", verifyFirebaseToken, async (req, res) => {
@@ -78,7 +83,7 @@ router.put("/me/medical", verifyFirebaseToken, async (req, res) => {
 });
 
 /**
- * ✅ UPDATE Emergency Contact
+ * ✅ UPDATE Emergency Contact Only
  * PUT /api/users/me/emergency
  */
 router.put("/me/emergency", verifyFirebaseToken, async (req, res) => {
@@ -90,6 +95,7 @@ router.put("/me/emergency", verifyFirebaseToken, async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     user.emergencyContact = { name, phone, relation };
+
     await user.save();
 
     res.json({
@@ -102,14 +108,16 @@ router.put("/me/emergency", verifyFirebaseToken, async (req, res) => {
 });
 
 /**
- * ❌ DELETE Profile (Optional)
+ * ❌ DELETE Account
  * DELETE /api/users/me
  */
 router.delete("/me", verifyFirebaseToken, async (req, res) => {
   try {
     await User.findOneAndDelete({ firebaseUid: req.user.uid });
 
-    res.json({ message: "User account deleted successfully" });
+    res.json({
+      message: "User account deleted successfully",
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
