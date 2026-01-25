@@ -13,7 +13,7 @@ import PatientDashboard from './pages/Patient/PatientDashboard'
 import SelectRolePage from './pages/auth/SelectRolePage'
 import LoginForm from './components/loginSignup/LoginForm'
 import Register from './components/loginSignup/Register'
-import CenterVerificationForm from './components/loginSignup/CenterVerificationForm'
+// import CenterVerificationForm from './components/loginSignup/CenterVerificationForm'
 import CenterDetailsForm from './components/loginSignup/CenterDetailsForm'
 import PatientDetailsForm from './components/loginSignup/PatientDetailsForm'
 import RoleSelector from './components/loginSignup/RoleSelector'
@@ -35,14 +35,14 @@ function App() {
         {/* AFTER REGISTRATION */}
         <Route path="/patient/details" element={<PatientDetailsForm />} />
         <Route path="/center/details" element={<CenterDetailsForm />} />
-        <Route path="/center/verify" element={<CenterVerificationForm />} />
+        {/* <Route path="/center/verify" element={<CenterVerificationForm />} /> */}
 
         <Route path='/patient/:pid/dashboard' element={<PatientDashboard />} />
         <Route path='/patient/:pid/myappointments' element={<MyAppointments />} />
         <Route path='/patient/:pid/bookappointment' element={<BookingPage />} />
         <Route path='/center/:cid' element={<CenterDetails />} />
         <Route path='/centerdashboard/:cid' element={<CenterDashboard />} />
-        <Route path='/:pid/:cid/bookingconfirmation' element={<BookingConfirmation />} />
+        <Route path='/patient/:pid/bookappointment/:cid' element={<BookingConfirmation />} />
         <Route path='/patient/:pid/profile' element={<PatientProfile />} />
         <Route path='/patient/:pid/profile/edit' element={<EditProfile />} />
       </Routes>

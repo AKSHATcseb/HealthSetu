@@ -38,20 +38,20 @@ const appointmentSchema = new mongoose.Schema(
     },
 
     /**
-     * Start Time (Dynamic)
-     * Example: "08:00"
-     */
-    startTime: {
-      type: String,
-      required: true,
-    },
-
-    /**
      * Duration in Hours (4 or 6)
      */
     durationHours: {
       type: Number,
       enum: [4, 6],
+      required: true,
+    },
+
+    /**
+     * Start Time (Dynamic)
+     * Example: "08:00"
+     */
+    startTime: {
+      type: String,
       required: true,
     },
 

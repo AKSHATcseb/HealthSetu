@@ -18,9 +18,6 @@ export default function PatientDashboard() {
           <div className="md:col-span-2 space-y-6">
             <h2 className="font-bold text-lg">Top AI Recommendation</h2>
             <RecommendationCard />
-            <RecommendationCard />
-            <RecommendationCard />
-            <RecommendationCard />
           </div>
 
           <div className="space-y-6">

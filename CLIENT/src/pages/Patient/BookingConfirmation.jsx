@@ -29,7 +29,7 @@ export default function BookAppointment() {
             onSelect={setSelectedSlot}
           />
 
-          <PreferencesForm />
+          {/* <PreferencesForm /> */}
 
           <PaymentSection
             selected={paymentMethod}

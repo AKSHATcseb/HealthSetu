@@ -22,13 +22,39 @@ router.post("/", verifyFirebaseToken, isHospitalAdmin, async (req, res) => {
 });
 
 /**
- * GET My Hospital
+ * GET Hospital by admin
  */
 router.get("/my", verifyFirebaseToken, isHospitalAdmin, async (req, res) => {
   const hospital = await Hospital.findOne({ adminUid: req.user.uid });
 
   res.json(hospital);
 });
+
+/**
+ * get particular hospital by user
+ */
+
+// GET /api/hospitals/:id
+router.get("/:id", async (req, res) => {
+  try {
+    const hospitalId = req.params.id;
+
+    const hospital = await Hospital.findById(hospitalId);
+
+    if (!hospital) {
+      return res.status(404).json({ message: "Hospital not found" });
+    }
+
+    res.status(200).json(hospital);
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch hospital details",
+      error: error.message,
+    });
+  }
+});
+
 
 /**
  * GET All Hospitals (Patient Search)

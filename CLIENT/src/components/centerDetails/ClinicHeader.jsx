@@ -1,32 +1,45 @@
-export default function ClinicHeader() {
+export default function ClinicHeader({ hospital }) {
   return (
     <div className="grid md:grid-cols-2 gap-6 items-center">
+
       {/* LEFT */}
       <div>
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-xs bg-teal-100 text-teal-700 px-3 py-1 rounded-full">
-            🤖 Recommended by AI
-          </span>
-          <span className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full">
-            ⭐ 4.8 (210 Reviews)
-          </span>
-        </div>
-
         <h1 className="text-4xl font-bold text-gray-900">
-          City Care Dialysis Center
+          {hospital.centerName}
         </h1>
 
-        <p className="mt-2 text-gray-600">
-          📍 123 Health Ave, Andheri West, Mumbai
-          <span className="ml-2 text-teal-600 cursor-pointer">
-            View on Map
-          </span>
+        <p className="mt-2 mb-4 text-gray-600">
+          📍 {hospital.location}
+          {hospital.mapLink && (
+            <a
+              href={hospital.mapLink}
+              target="_blank"
+              rel="noreferrer"
+              className="ml-2 text-teal-600"
+            >
+              View on Map
+            </a>
+          )}
         </p>
 
-        <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
-          <span>24/7 Service</span>
-          <span>Nephrologist On-Call</span>
-          <span>Wheelchair Access</span>
+        <div className="flex flex-col gap-2 text-sm text-gray-600">
+          <span>{hospital.is24x7 ? "24/7 Service" : "Limited Hours"}</span>
+          <span>
+            {hospital.emergencyService
+              ? "Emergency Dialysis Available"
+              : "No Emergency Service"}
+          </span>
+          <span>Type: {hospital.type}</span>
+
+          <span>
+            Working Days: {hospital.workingDays.join(", ")}
+          </span>
+
+          {!hospital.is24x7 && (
+            <span>
+              Timings: {hospital.workingHours.open} - {hospital.workingHours.close}
+            </span>
+          )}
         </div>
       </div>
 

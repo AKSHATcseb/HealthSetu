@@ -1,31 +1,88 @@
-import AIRecommendation from "../../components/centerDetails/AIRecommendation";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+
 import ClinicHeader from "../../components/centerDetails/ClinicHeader";
 import ClinicStats from "../../components/centerDetails/ClinicStats";
-import FacilityInfo from "../../components/centerDetails/FacilityInfo";
 import SidebarInfo from "../../components/centerDetails/SidebarInfo";
-import SlotTable from "../../components/centerDetails/SlotTable";
-import Navbar from "../../components/patientDashboard/Navbar";
 
+export default function HospitalDetails() {
 
-export default function ClinicDetails() {
-  return (
-    <>
-      <Navbar />
+  const { id } = useParams();
+  const [hospital, setHospital] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-      <div className="bg-gray-50 min-h-screen px-5 md:px-10 py-6">
-        <ClinicHeader />
-        <ClinicStats />
-        <AIRecommendation />
+  useEffect(() => {
+    const fetchHospital = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/hospitals/${id}`
+        );
 
-        <div className="mt-8 grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-8">
-            <SlotTable />
-            <FacilityInfo />
-          </div>
+        setHospital(res.data);
+      } catch (err) {
 
-          <SidebarInfo />
-        </div>
+        // 👇 If backend sent 404
+        if (err.response?.status === 404) {
+          setNotFound(true);
+        } else {
+          console.error("Error fetching hospital:", err);
+        }
+
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHospital();
+  }, [id]);
+
+  // ⏳ Loading state
+  if (loading) {
+    return (
+      <div className="text-center py-20 text-gray-600">
+        Loading hospital details...
       </div>
-    </>
+    );
+  }
+
+  // ❌ Hospital not found
+  if (notFound) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-3">
+          Hospital Not Found
+        </h2>
+        <p className="text-gray-600">
+          No hospital exists with this ID.
+        </p>
+      </div>
+    );
+  }
+
+  // ⚠️ Safety check
+  if (!hospital) {
+    return (
+      <div className="text-center py-20 text-gray-600">
+        Something went wrong. Please try again.
+      </div>
+    );
+  }
+
+  // ✅ Normal UI
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8 grid lg:grid-cols-3 gap-6">
+
+      {/* MAIN */}
+      <div className="lg:col-span-2">
+        <ClinicHeader hospital={hospital} />
+        <ClinicStats hospital={hospital} />
+      </div>
+
+      {/* SIDEBAR */}
+      <SidebarInfo hospital={hospital} />
+
+    </div>
   );
 }
