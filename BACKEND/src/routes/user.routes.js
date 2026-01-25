@@ -4,10 +4,7 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-/**
- * ✅ GET Current Logged-in User Profile
- * GET /api/users/me
- */
+
 router.get("/me", verifyFirebaseToken, async (req, res) => {
   try {
     const user = await User.findOne({ firebaseUid: req.user.uid });
@@ -24,12 +21,7 @@ router.get("/me", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-/**
- * ✅ UPDATE Full Profile (Patient/Admin)
- * PUT /api/users/me
- *
- * Frontend will send full form data here.
- */
+
 router.put("/me", verifyFirebaseToken, async (req, res) => {
   try {
     // Prevent updating sensitive fields
@@ -54,10 +46,6 @@ router.put("/me", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-/**
- * ✅ UPDATE Medical Info Only
- * PUT /api/users/me/medical
- */
 router.put("/me/medical", verifyFirebaseToken, async (req, res) => {
   try {
     const { bloodGroup, dialysisType } = req.body;
@@ -82,10 +70,7 @@ router.put("/me/medical", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-/**
- * ✅ UPDATE Emergency Contact Only
- * PUT /api/users/me/emergency
- */
+
 router.put("/me/emergency", verifyFirebaseToken, async (req, res) => {
   try {
     const { name, phone, relation } = req.body;
@@ -107,10 +92,6 @@ router.put("/me/emergency", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-/**
- * ❌ DELETE Account
- * DELETE /api/users/me
- */
 router.delete("/me", verifyFirebaseToken, async (req, res) => {
   try {
     await User.findOneAndDelete({ firebaseUid: req.user.uid });

@@ -96,6 +96,7 @@ export default function RecommendationCard() {
                         </div>
                         <div className="flex items-end">
                             <motion.button
+                            onClick={() => navigate("/center/1/bookingconfirmation")}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 className=" 

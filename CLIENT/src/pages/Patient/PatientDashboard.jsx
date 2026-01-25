@@ -7,7 +7,7 @@ import RecentSearches from "../../components/patientDashboard/RecentSearches";
 import LocationCard from "../../components/patientDashboard/LocationCard";
 import HealthTip from "../../components/patientDashboard/HealthTip";
 
-export default function Dashboard() {
+export default function PatientDashboard() {
   return (
     <>
         <Navbar />
