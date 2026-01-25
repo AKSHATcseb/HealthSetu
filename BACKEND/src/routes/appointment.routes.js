@@ -124,6 +124,8 @@ router.post("/book", verifyFirebaseToken, isPatient, async (req, res) => {
   }
 });
 
+
+
 /**
  * ✅ PATIENT VIEW MY APPOINTMENTS
  * GET /api/appointments/my
