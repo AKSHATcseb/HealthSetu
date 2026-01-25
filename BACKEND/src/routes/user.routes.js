@@ -4,7 +4,7 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-/**
+/*
  * ✅ GET Logged-in User Profile
  * GET /api/users/me
  */

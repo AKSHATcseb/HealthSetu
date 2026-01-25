@@ -1,338 +1,268 @@
 import { useState } from "react";
-import LocationDetailsForm from "./LocationDetailsForm";
-import ComplianceForm from "./ComplianceForm";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { auth } from "../../firebase";
+import LocationDetailsForm from "./LocationDetailsForm";
+import ComplianceForm from "./ComplianceForm";
 
 const daysOfWeek = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
+    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
 ];
 
 export default function CenterDetailsForm() {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
     const [formData, setFormData] = useState({
+        centerName: "",
+        registrationNumber: "",
+        type: "",
         email: "",
         phone: "",
-        dialysisCount: "",
-        normalCost: "",
-        emergencyAvailable: false,
-        emergencyCost: "",
+        totalMachines: "",
+        costPerSession4h: "",
+        costPerSession6h: "",
+        emergencyService: false,
+        emergencyCostPerSession: "",
+        is24x7: false,
         workingDays: [],
-        openingTime: "",
-        closingTime: "",
-        emergency24x7: false,
-
+        workingHours: {
+            open: "",
+            close: "",
+        },
         upiId: "",
+        location: ""
     });
 
-    /* ---------- HANDLERS ---------- */
+    /* ---------------- HANDLERS ---------------- */
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData((prev) => ({
-            ...prev,
+        setFormData((p) => ({
+            ...p,
             [name]: type === "checkbox" ? checked : value,
         }));
     };
 
     const toggleDay = (day) => {
-        setFormData((prev) => ({
-            ...prev,
-            workingDays: prev.workingDays.includes(day)
-                ? prev.workingDays.filter((d) => d !== day)
-                : [...prev.workingDays, day],
+        setFormData((p) => ({
+            ...p,
+            workingDays: p.workingDays.includes(day)
+                ? p.workingDays.filter((d) => d !== day)
+                : [...p.workingDays, day],
         }));
     };
 
-    /* ---------- SUBMIT ---------- */
+    /* ---------------- SUBMIT ---------------- */
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const token = await auth.currentUser.getIdToken();
+        try {
+            setLoading(true);
+            setError(null);
 
-        const payload = {
-            role: "center",
-            ...formData,
-        };
+            const user = auth.currentUser;
 
-        await axios.post(
-            "http://localhost:5000/api/auth/login",
-            payload,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            // 🔴 No user logged in
+            if (!user) {
+                setError("User not authenticated");
+                return;
             }
-        );
 
-        navigate("/centerdashboard");
+            // 🔴 Reload to get latest verification status
+            await user.reload();
+
+            // 🔴 Check email verified
+            if (!user.emailVerified) {
+                setError("Please verify your email before completing registration.");
+                setLoading(false);
+                return;
+            }
+
+            // ✅ Now safe to continue
+            const token = await user.getIdToken();
+
+            const res = await axios.post(
+                "http://localhost:8080/api/auth/login",
+                {
+                    role: "center",
+                    ...formData,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const center = res.data.user;
+
+            navigate(`/center/${center._id}/dashboard`, { replace: true });
+
+        } catch (err) {
+            setError(
+                err.response?.data?.message ||
+                "Failed to save center details"
+            );
+        } finally {
+            setLoading(false);
+        }
     };
-    const navigate = useNavigate()
+
 
     return (
-
-        <div className="px-64">
+        <div className="min-h-screen bg-linear-to-br from-teal-50 to-slate-100 py-10 px-4 flex justify-center">
             <form
                 onSubmit={handleSubmit}
-                className="space-y-6 mt-6 bg-white p-6 rounded-xl shadow"
+                className="w-full max-w-5xl bg-white rounded-3xl shadow-xl p-8 space-y-8"
             >
-                <h3 className="font-semibold text-lg text-gray-800">
-                    Dialysis Center Details
-                </h3>
+                {/* HEADER */}
+                <div className="border-b pb-4">
+                    <h2 className="text-2xl font-bold text-slate-800">
+                        Dialysis Center Profile
+                    </h2>
+                    <p className="text-sm text-slate-500 mt-1">
+                        Provide accurate center details for patient trust & verification
+                    </p>
+                </div>
 
                 {/* BASIC DETAILS */}
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Contact Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-200 rounded-xl"
-                    required
-                />
+                <section className="space-y-5">
+                    <h3 className="section-title">Basic Information</h3>
 
-                <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Contact Phone Number"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-200 rounded-xl"
-                    required
-                />
+                    <div className="grid md:grid-cols-2 gap-5">
+                        <input name="email" placeholder="Contact Email" onChange={handleChange} className="input" />
+                        <input name="phone" placeholder="Contact Phone Number" onChange={handleChange} className="input" />
+                        <input name="totalMachines" placeholder="Number of Dialysis Machines" onChange={handleChange} className="input" />
+                        <input name="costPerSession4h" placeholder="Cost per Session (3-4 hrs dialysis)" onChange={handleChange} className="input" />
+                        <input name="costPerSession6h" placeholder="Cost per Session (5-6 hrs dialysis)" onChange={handleChange} className="input" />
+                    </div>
+                </section>
 
-                <input
-                    type="number"
-                    name="dialysisCount"
-                    placeholder="Number of Dialysis Machines"
-                    value={formData.dialysisCount}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-200 rounded-xl"
-                />
+                {/* EMERGENCY */}
+                <section className="space-y-4">
+                    <h3 className="section-title">Emergency Services</h3>
 
-                <input
-                    type="number"
-                    name="normalCost"
-                    placeholder="Cost per Session"
-                    value={formData.normalCost}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-200 rounded-xl"
-                />
-
-                {/* EMERGENCY DIALYSIS */}
-                <div className="flex items-center gap-3">
-                    <input
-                        type="checkbox"
-                        name="emergencyAvailable"
-                        checked={formData.emergencyAvailable}
-                        onChange={handleChange}
-                        className="w-5 h-5"
-                    />
-                    <span className="text-sm font-medium">
+                    <label className="flex items-center gap-3 text-sm">
+                        <input type="checkbox" name="emergencyService" onChange={handleChange} />
                         Emergency Dialysis Available
-                    </span>
-                </div>
-
-                {formData.emergencyAvailable && (
-                    <input
-                        type="number"
-                        name="emergencyCost"
-                        placeholder="Emergency Cost per Session"
-                        value={formData.emergencyCost}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
-                    />
-                )}
-
-                {/* 24/7 EMERGENCY AVAILABILITY */}
-                <div className="space-y-2">
-                    <h4 className="text-sm font-semibold text-gray-700">
-                        24/7 Emergency Dialysis
-                    </h4>
-
-                    <div className="flex gap-4">
-                        <button
-                            type="button"
-                            onClick={() =>
-                                setFormData((prev) => ({ ...prev, emergency24x7: true }))
-                            }
-                            className={`px-5 py-2 rounded-full font-medium transition
-        ${formData.emergency24x7
-                                    ? "bg-teal-600 text-white"
-                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                                }`}
-                        >
-                            Yes
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() =>
-                                setFormData((prev) => ({ ...prev, emergency24x7: false }))
-                            }
-                            className={`px-5 py-2 rounded-full font-medium transition
-        ${!formData.emergency24x7
-                                    ? "bg-teal-600 text-white"
-                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                                }`}
-                        >
-                            No
-                        </button>
-                    </div>
-                </div>
-
-                {/* CENTER RATING */}
-                <div className="space-y-2">
-                    <h4 className="text-sm font-semibold text-gray-700">
-                        Center Rating
-                    </h4>
-
-                    <div className="flex gap-2">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                                key={star}
-                                type="button"
-                                onClick={() =>
-                                    setFormData((prev) => ({ ...prev, rating: star }))
-                                }
-                                className={`w-10 h-10 rounded-full text-lg font-bold transition
-          ${formData.rating >= star
-                                        ? "bg-teal-600 text-white scale-105"
-                                        : "bg-gray-200 text-gray-500 hover:bg-gray-300"
-                                    }`}
-                            >
-                                ★
-                            </button>
-                        ))}
-                    </div>
-
-                    <p className="text-xs text-gray-500">
-                        Selected rating: {formData.rating || "Not rated"}
-                    </p>
-                </div>
-
-
-                {/* WORKING DAYS */}
-                <div className="space-y-3">
-                    <h4 className="text-sm font-semibold text-gray-700">
-                        Working Days
-                    </h4>
-
-                    <div className="flex flex-wrap gap-3">
-                        {daysOfWeek.map((day) => {
-                            const isSelected = formData.workingDays.includes(day);
-
-                            return (
-                                <button
-                                    key={day}
-                                    type="button"
-                                    onClick={() => toggleDay(day)}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all
-                  ${isSelected
-                                            ? "bg-teal-600 text-white shadow-md scale-105"
-                                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                        }`}
-                                >
-                                    {isSelected && <span className="text-xs">✓</span>}
-                                    {day}
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    <p className="text-xs text-gray-500">
-                        Select the days when the dialysis center is operational
-                    </p>
-                </div>
-
-                {/* OPERATING HOURS */}
-                <div className="space-y-3">
-                    <h4 className="text-sm font-semibold text-gray-700">
-                        Operating Hours
-                    </h4>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">
-                                Opening Time
-                            </label>
-                            <input
-                                type="time"
-                                name="openingTime"
-                                value={formData.openingTime}
-                                onChange={handleChange}
-                                className="w-full border rounded-xl px-4 py-3"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">
-                                Closing Time
-                            </label>
-                            <input
-                                type="time"
-                                name="closingTime"
-                                value={formData.closingTime}
-                                onChange={handleChange}
-                                className="w-full border rounded-xl px-4 py-3"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* LOCATION + COMPLIANCE */}
-                <LocationDetailsForm />
-                <ComplianceForm />
-
-                {/* PREVIEW */}
-                <div className="bg-gray-50 p-3 rounded text-sm">
-                    <p>
-                        <b>Working Days:</b> {formData.workingDays.join(", ") || "Not selected"}
-                    </p>
-                    <p>
-                        <b>Timings:</b>{" "}
-                        {formData.openingTime && formData.closingTime
-                            ? `${formData.openingTime} - ${formData.closingTime}`
-                            : "Not set"}
-                    </p>
-                </div>
-
-                {/* UPI Link */}
-                <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700">
-                        UPI ID / UPI Payment Link
                     </label>
 
-                    <input
-                        type="text"
-                        name="upiId"
-                        placeholder="example@upi or upi://pay?pa=example@upi"
-                        value={formData.upiId}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
-                    />
+                    {formData.emergencyService && (
+                        <input
+                            name="emergencyCostPerSession"
+                            placeholder="Emergency Cost per Session"
+                            onChange={handleChange}
+                            className="input"
+                        />
+                    )}
+                </section>
 
-                    <p className="text-xs text-gray-500">
-                        This will be used for direct patient payments
+                <section className="space-y-4">
+                    <h3 className="section-title">Days & Timings</h3>
+
+                    <label className="flex items-center gap-3 text-sm">
+                        <input type="checkbox" name="is24x7" onChange={handleChange} />
+                        24/7
+                    </label>
+
+                    {!formData.is24x7 && (
+                        <section className="space-y-3">
+                            <div className="flex flex-wrap gap-3">
+                                {daysOfWeek.map((day) => (
+                                    <button
+                                        key={day}
+                                        type="button"
+                                        onClick={() => toggleDay(day)}
+                                        className={`pill ${formData.workingDays.includes(day) ? "pill-active" : ""}`}
+                                    >
+                                        {day}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-5">
+                                <input type="time" name="openingTime" onChange={handleChange} className="input" />
+                                <input type="time" name="closingTime" onChange={handleChange} className="input" />
+                            </div>
+
+                        </section>
+                    )}
+                </section>
+
+                {/* LOCATION + COMPLIANCE */}
+                <LocationDetailsForm
+                    onChange={(location) =>
+                        setFormData((p) => ({ ...p, location }))
+                    }
+                />
+
+                <ComplianceForm />
+
+                {/* UPI */}
+                <section>
+                    <input
+                        name="upiId"
+                        placeholder="UPI ID / Payment Link"
+                        onChange={handleChange}
+                        className="input"
+                    />
+                </section>
+
+                {/* ERROR */}
+                {error && (
+                    <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg">
+                        {error}
                     </p>
-                </div>
+                )}
 
                 {/* SUBMIT */}
                 <button
-                    onClick={() => navigate('/centerdashboard')}
                     type="submit"
-                    className="w-full bg-teal-600 text-white py-3 rounded-xl font-medium"
+                    disabled={loading}
+                    className="w-full py-4 rounded-full bg-linear-to-r from-teal-600 to-teal-700 text-white font-semibold text-lg disabled:opacity-60"
                 >
-                    Save
+                    {loading ? "Saving Center Profile..." : "Complete Registration"}
                 </button>
             </form>
+
+            {/* Utility styles */}
+            <style>{`
+        .input {
+          padding: 14px 16px;
+          border-radius: 14px;
+          background: #f1f5f9;
+          border: 1px solid transparent;
+        }
+        .input:focus {
+          border-color: #14b8a6;
+          background: white;
+        }
+        .section-title {
+          font-weight: 600;
+          color: #0f766e;
+        }
+        .pill {
+          padding: 8px 16px;
+          border-radius: 9999px;
+          background: #e5e7eb;
+        }
+        .pill-active {
+          background: #14b8a6;
+          color: white;
+        }
+        .star {
+          width: 40px;
+          height: 40px;
+          border-radius: 9999px;
+          background: #e5e7eb;
+        }
+        .star-active {
+          background: #14b8a6;
+          color: white;
+        }
+      `}</style>
         </div>
     );
 }

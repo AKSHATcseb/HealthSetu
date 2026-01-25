@@ -5,10 +5,10 @@ export default function ProfileHeader({ patientName, pid }) {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="flex items-center justify-between bg-white rounded-2xl p-5 shadow-sm">
       <div className="flex items-center gap-4">
         <div className="bg-teal-100 text-teal-700 p-4 rounded-2xl">
-          <User size={32} />
+          <User size={28} />
         </div>
 
         <div>
@@ -24,12 +24,10 @@ export default function ProfileHeader({ patientName, pid }) {
       <button
         onClick={() => navigate(`/${pid}/profile/editprofile`)}
         className="
-          p-2.5 rounded-full
-          bg-white border border-teal-200
-          text-teal-700
-          hover:bg-teal-50 hover:border-teal-300
-          transition
-          shadow-sm
+          p-3 rounded-xl
+          bg-teal-600 text-white
+          hover:bg-teal-700
+          transition shadow
         "
         title="Edit Profile"
       >

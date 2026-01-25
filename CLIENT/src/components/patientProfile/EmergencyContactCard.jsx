@@ -1,14 +1,28 @@
 export default function EmergencyContactCard({ contact }) {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm">
-      <h3 className="font-semibold text-lg mb-4">Emergency Contact</h3>
+      <h3 className="font-semibold text-lg mb-4 text-gray-900">
+        Emergency Contact
+      </h3>
 
-      <p><span className="text-gray-500">Name:</span> {contact?.name}</p>
-      <p><span className="text-gray-500">Relation:</span> {contact?.relation}</p>
-      <p><span className="text-gray-500">Phone:</span> {contact?.phone}</p>
+      <div className="space-y-3 text-sm">
+        <Info label="Name" value={contact?.name} />
+        <Info label="Relation" value={contact?.relation} />
+        <Info label="Phone" value={contact?.phone} />
+      </div>
     </div>
   );
 }
+
+function Info({ label, value }) {
+  return (
+    <div className="flex justify-between">
+      <span className="text-gray-500">{label}</span>
+      <span className="font-medium">{value || "-"}</span>
+    </div>
+  );
+}
+
 
 
 

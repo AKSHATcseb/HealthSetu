@@ -1,19 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendEmailVerification
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
+import { getMe } from "../../services/userApi";
 
-export default function LoginForm({ onSwitch }) {
+export default function LoginForm() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // ✅ ADD THIS
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleLogin = async () => {
     try {
+      setLoading(true);
+      setError(null);
+
+      // 1️⃣ Firebase login
       const userCred = await signInWithEmailAndPassword(
         auth,
         email,
@@ -21,82 +25,110 @@ export default function LoginForm({ onSwitch }) {
       );
 
       if (!userCred.user.emailVerified) {
-        alert("Please verify your email first");
+        setError("Please verify your email before logging in.");
         return;
       }
 
+      // 2️⃣ Get backend profile
       const token = await userCred.user.getIdToken();
-      console.log("Firebase ID Token:", token);
+      const res = await getMe(token);
+      const user = res.data;
 
-      alert("Login successful");
-
-      // ✅ REDIRECT TO DASHBOARD
-      navigate("/dashboard");
-
-      // 👉 optionally send token to backend here
-    } catch (err) {
-      if (err.code === "auth/user-not-found") {
-        try {
-          const userCred = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-
-          await sendEmailVerification(userCred.user);
-          alert("Verification email sent. Please verify before login.");
-        } catch (e) {
-          alert(e.message);
-        }
-      } else {
-        alert(err.message);
+      // 3️⃣ Role-based redirect
+      if (user.role === "patient") {
+        navigate(`/patient/${user._id}/dashboard`, { replace: true });
+      } else if (user.role === "center") {
+        navigate(`/center/${user._id}/dashboard`, { replace: true });
       }
+
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        err.message ||
+        "Login failed"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md">
-      <h2 className="text-3xl font-bold text-gray-800">
-        Welcome Back 👋
-      </h2>
-      <p className="text-gray-500 mt-1 mb-6">
-        Log in to manage your dialysis care
-      </p>
+    <div className="min-h-screen bg-linear-to-br from-teal-50 to-slate-100 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 space-y-8">
 
-      <div className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-gray-200 text-gray-600 outline-none focus:ring-2 focus:ring-teal-500"
-        />
+        {/* HEADER */}
+        <div>
+          <h2 className="text-3xl font-bold text-slate-800">
+            Welcome Back 👋
+          </h2>
+          <p className="text-sm text-slate-500 mt-1">
+            Log in to manage your dialysis care with HealthSetu
+          </p>
+        </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-gray-200 text-gray-600 outline-none focus:ring-2 focus:ring-teal-500"
-        />
+        {/* FORM */}
+        <div className="space-y-5">
+          <input
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input"
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input"
+          />
+        </div>
+
+        {/* ERROR */}
+        {error && (
+          <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg">
+            {error}
+          </p>
+        )}
+
+        {/* SUBMIT */}
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          className="w-full py-3 rounded-full bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold hover:opacity-95 transition disabled:opacity-60"
+        >
+          {loading ? "Logging in..." : "Log in"}
+        </button>
+
+        {/* FOOTER */}
+        <p className="text-sm text-center text-slate-500">
+          New to HealthSetu?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-teal-600 font-medium cursor-pointer hover:underline"
+          >
+            Create new account
+          </span>
+        </p>
       </div>
 
-      <button
-        onClick={handleLogin}
-        className="w-full mt-6 py-3 rounded-full bg-teal-600 text-white font-semibold hover:bg-teal-700 transition"
-      >
-        Log in
-      </button>
-
-      <p className="text-sm text-gray-500 text-center mt-6">
-        New to HealthSetu?{" "}
-        <span
-          onClick={onSwitch}
-          className="text-teal-600 cursor-pointer font-medium"
-        >
-          Create account
-        </span>
-      </p>
+      {/* Utility styles */}
+      <style>{`
+        .input {
+          width: 100%;
+          padding: 14px 16px;
+          border-radius: 14px;
+          background: #f1f5f9;
+          color: #334155;
+          outline: none;
+          border: 1px solid transparent;
+        }
+        .input:focus {
+          border-color: #14b8a6;
+          background: #ffffff;
+        }
+      `}</style>
     </div>
   );
 }

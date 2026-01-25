@@ -1,102 +1,177 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function LocationDetailsForm() {
+export default function LocationDetailsForm({ onChange }) {
   const [formData, setFormData] = useState({
-    address: "",
+    street: "",
     city: "",
     state: "",
     pincode: "",
-    mapLink: "",
     latitude: "",
     longitude: "",
   });
 
+  const [isLocationSelected, setIsLocationSelected] = useState(false);
+
   /* ---------- HELPERS ---------- */
 
   const extractLatLng = (url) => {
-    try {
-      // Matches @lat,lng from Google Maps URL
-      const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    return match
+      ? { lat: Number(match[1]), lng: Number(match[2]) }
+      : null;
+  };
 
-      if (match) {
-        return {
-          lat: match[1],
-          lng: match[2],
-        };
-      }
-      return null;
-    } catch {
-      return null;
-    }
+  const buildPayload = (data) => {
+    const payload = {
+      address: {
+        street: data.street,
+        city: data.city,
+        state: data.state,
+        pincode: data.pincode,
+      },
+      location: data.latitude && data.longitude
+        ? {
+          type: "Point",
+          coordinates: [data.longitude, data.latitude], // 🔥 [lng, lat]
+        }
+        : null,
+    };
+
+    console.log("📍 Location Payload:", JSON.stringify(payload, null, 2));
+    return payload;
+  };
+
+  const updateAll = (data) => {
+    setFormData(data);
+    const payload = buildPayload(data);
+    onChange && onChange(payload);
   };
 
   /* ---------- HANDLERS ---------- */
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    updateAll({ ...formData, [name]: value });
   };
 
   const handleMapLinkChange = (e) => {
-    const link = e.target.value;
-    const coords = extractLatLng(link);
+    const coords = extractLatLng(e.target.value);
+    if (!coords) return;
 
-    setFormData((prev) => ({
-      ...prev,
-      mapLink: link,
-      latitude: coords ? coords.lat : "",
-      longitude: coords ? coords.lng : "",
-    }));
+    updateAll({
+      ...formData,
+      latitude: coords.lat,
+      longitude: coords.lng,
+    });
   };
+
+  const fetchCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        updateAll({
+          ...formData,
+          latitude: Number(pos.coords.latitude.toFixed(6)),
+          longitude: Number(pos.coords.longitude.toFixed(6)),
+        });
+
+        setIsLocationSelected(true); // ✅ mark as selected
+      },
+      () => {
+        alert("Location access denied");
+      }
+    );
+  };
+
 
   return (
     <div className="space-y-4">
-      <h4 className="font-medium text-gray-800">
+      <h4 className="font-semibold text-slate-800">
         Location Details
       </h4>
 
-      <input
-        type="text"
-        name="address"
-        placeholder="Complete Address"
-        value={formData.address}
-        onChange={handleChange}
-        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
-      />
+      <button
+        type="button"
+        onClick={fetchCurrentLocation}
+        className={`
+    px-4 py-2 rounded-full text-sm font-medium transition
+    ${isLocationSelected
+            ? "bg-teal-600 text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300"}
+  `}
+      >
+        📍 Use Current Location
+      </button>
+
 
       <input
-        type="text"
-        name="city"
-        placeholder="City / District"
-        value={formData.city}
+        name="street"
+        placeholder="House No. / Street / Society"
+        value={formData.street}
         onChange={handleChange}
-        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
+        className="input"
       />
 
-      <input
-        type="text"
-        name="state"
-        placeholder="State"
-        value={formData.state}
-        onChange={handleChange}
-        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <input
+          name="city"
+          placeholder="City"
+          value={formData.city}
+          onChange={handleChange}
+          className="input"
+        />
+
+        <input
+          name="state"
+          placeholder="State"
+          value={formData.state}
+          onChange={handleChange}
+          className="input"
+        />
+      </div>
 
       <input
-        type="number"
         name="pincode"
         placeholder="Pincode"
         value={formData.pincode}
         onChange={handleChange}
-        className="w-full px-4 py-3 bg-gray-200 rounded-xl"
+        className="input"
       />
 
-      <div className="bg-teal-50 text-teal-700 px-4 py-3 rounded-xl text-sm">
-        📍 Location will be auto-detected from Google Maps link
+      {/* ACTIONS */}
+      <div className="flex flex-wrap gap-3">
+
+
+        {/* <input
+          type="text"
+          placeholder="Paste Google Maps link"
+          onChange={handleMapLinkChange}
+          className="input"
+        /> */}
       </div>
+
+      {/* <p className="text-xs text-teal-700 bg-teal-50 px-3 py-2 rounded-lg">
+        📌 Location will be saved using GPS / Google Maps
+      </p> */}
+
+      <style>{`
+        .input {
+          width: 100%;
+          padding: 14px 16px;
+          border-radius: 14px;
+          background: #f1f5f9;
+          border: 1px solid transparent;
+        }
+        .input:focus {
+          outline: none;
+          background: white;
+          border-color: #14b8a6;
+        }
+      `}</style>
     </div>
   );
 }

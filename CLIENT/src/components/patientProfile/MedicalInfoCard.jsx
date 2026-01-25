@@ -1,28 +1,24 @@
 export default function MedicalInfoCard({ medicalInfo }) {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm">
-      <h3 className="font-semibold text-lg mb-4">Medical Information</h3>
+      <h3 className="font-semibold text-lg mb-4 text-gray-900">
+        Medical Information
+      </h3>
 
-      <div>
-        <p className="text-gray-500">Dialysis Type</p>
-        <p className="font-medium">{medicalInfo?.dialysisType}</p>
-      </div>
+      <div className="grid sm:grid-cols-2 gap-6 text-sm">
+        <div>
+          <p className="text-gray-500">Dialysis Type</p>
+          <p className="font-medium">{medicalInfo?.dialysisType || "-"}</p>
+        </div>
 
-      <div className="mt-3">
-        <p className="text-gray-500">Nephrologist</p>
-        <p className="font-medium">{medicalInfo?.nephrologist}</p>
+        <div>
+          <p className="text-gray-500">Nephrologist</p>
+          <p className="font-medium">{medicalInfo?.nephrologist || "-"}</p>
+        </div>
       </div>
     </div>
   );
 }
-
-
-
-
-
-
-
-
 
 
 
