@@ -49,6 +49,7 @@ const hospitalSchema = new mongoose.Schema(
         enum: ["Point"],
         default: "Point",
       },
+      
       coordinates: {
         type: [Number], // [longitude, latitude]
         required: true,
@@ -102,7 +103,7 @@ const hospitalSchema = new mongoose.Schema(
 
     rating: { type: Number, min: 0, max: 5 },
     reviewCount: { type: Number, default: 0 },
-    
+
     isActive: {
       type: Boolean,
       default: true,
@@ -112,6 +113,12 @@ const hospitalSchema = new mongoose.Schema(
     upiId: {
       type: String,
       default: null,
+    },
+
+    //is verified by admin
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
 
   },

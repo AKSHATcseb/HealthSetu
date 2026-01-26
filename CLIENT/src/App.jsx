@@ -41,7 +41,7 @@ function App() {
         <Route path='/patient/:pid/myappointments' element={<MyAppointments />} />
         <Route path='/patient/:pid/bookappointment' element={<BookingPage />} />
         <Route path='/center/:cid' element={<CenterDetails />} />
-        <Route path='/centerdashboard/:cid' element={<CenterDashboard />} />
+        <Route path='/center/:cid/dashboard' element={<CenterDashboard />} />
         <Route path='/patient/:pid/bookappointment/:cid' element={<BookingConfirmation />} />
         <Route path='/patient/:pid/profile' element={<PatientProfile />} />
         <Route path='/patient/:pid/profile/edit' element={<EditProfile />} />
