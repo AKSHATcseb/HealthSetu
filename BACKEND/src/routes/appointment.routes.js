@@ -18,62 +18,83 @@ const router = express.Router();
  */
 router.post("/book", verifyFirebaseToken, isPatient, async (req, res) => {
   try {
-    const { hospitalId, appointmentDate, startTime, durationHours, isEmergency } = req.body;
+    const {
+      hospitalId,
+      appointmentDate,
+      startTime,
+      durationHours,
+      isEmergency,
+    } = req.body;
 
+    // ✅ Validate inputs
+    if (!hospitalId || !appointmentDate || !startTime || !durationHours) {
+      return res.status(400).json({
+        message: "hospitalId, appointmentDate, startTime, durationHours required",
+      });
+    }
+
+    // ✅ Validate duration
+    if (![4, 6].includes(durationHours)) {
+      return res.status(400).json({
+        message: "Duration must be 4 or 6 hours only",
+      });
+    }
+
+    // ✅ Find hospital
     const hospital = await Hospital.findById(hospitalId);
 
     if (!hospital) {
       return res.status(404).json({ message: "Hospital not found" });
     }
 
-    // Auto calculate amount
-    let amount = 0;
-
-    if (durationHours === 4) {
-      amount = hospital.costPerSession4h;
-    }
-
-    if (durationHours === 6) {
-      amount = hospital.costPerSession6h;
-    }
+    // ✅ Auto Calculate Amount
+    let amount =
+      durationHours === 4
+        ? hospital.costPerSession4h
+        : hospital.costPerSession6h;
 
     if (isEmergency) {
+      if (!hospital.emergencyServices) {
+        return res.status(400).json({
+          message: "Emergency dialysis not available at this hospital",
+        });
+      }
       amount = hospital.emergencyCostPerSession;
     }
 
-
-    // Validate duration
-    if (![4, 6].includes(durationHours)) {
-      return res.status(400).json({ message: "Duration must be 4 or 6 hours" });
-    }
-
-    // Calculate end time
+    // ✅ Calculate endTime
     const endTime = calculateEndTime(startTime, durationHours);
 
-    // Find patient
+    // ✅ Find patient profile
     const patient = await User.findOne({ firebaseUid: req.user.uid });
 
-    // Get all machines in hospital
+    if (!patient) {
+      return res.status(404).json({ message: "Patient profile not found" });
+    }
+
+    // ✅ Get available machines
     const machines = await Machine.find({
       hospitalId,
       status: "available",
     });
 
-    if (machines.length === 0) {
-      return res.status(400).json({ message: "No machines available" });
+    if (!machines.length) {
+      return res.status(400).json({
+        message: "No machines available in this hospital",
+      });
     }
 
-    // Convert booking time range to minutes
+    // Convert times to minutes
     const newStart = timeToMinutes(startTime);
     const newEnd = timeToMinutes(endTime);
 
     let assignedMachine = null;
 
-    // Machine allocation with overlap checking
+    // ✅ Machine Allocation Loop
     for (let machine of machines) {
       const existingAppointments = await Appointment.find({
         machineId: machine._id,
-        appointmentDate: new Date(appointmentDate),
+        appointmentDate,
         status: { $in: ["reserved", "active"] },
       });
 
@@ -83,7 +104,7 @@ router.post("/book", verifyFirebaseToken, isPatient, async (req, res) => {
         const existingStart = timeToMinutes(appt.startTime);
         const existingEnd = timeToMinutes(appt.endTime);
 
-        // Overlap Condition
+        // ✅ Overlap condition
         if (newStart < existingEnd && newEnd > existingStart) {
           overlap = true;
           break;
@@ -96,22 +117,27 @@ router.post("/book", verifyFirebaseToken, isPatient, async (req, res) => {
       }
     }
 
+    // ❌ No machine free for that slot
     if (!assignedMachine) {
       return res.status(400).json({
-        message: "No machine available for this time range",
+        message: "No machine available for this time slot",
       });
     }
 
-    // Create Appointment (RESERVED)
+    // ✅ Create Appointment Reservation
     const appointment = await Appointment.create({
       patientId: patient._id,
       hospitalId,
       machineId: assignedMachine._id,
+
       appointmentDate,
       startTime,
-      durationHours,
       endTime,
+      durationHours,
+
       amount,
+      isEmergency: isEmergency || false,
+
       status: "reserved",
     });
 
@@ -120,7 +146,10 @@ router.post("/book", verifyFirebaseToken, isPatient, async (req, res) => {
       appointment,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: "Appointment booking failed",
+      error: err.message,
+    });
   }
 });
 

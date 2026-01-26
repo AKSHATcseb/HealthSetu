@@ -54,11 +54,11 @@ export default function LoginForm() {
 
       // ✅ 5. Redirect Based on Role
       if (profile.role === "patient") {
-        navigate(`/patient/dashboard`, { replace: true });
+        navigate(`/patient/${profile._id}/dashboard`, { replace: true });
       }
 
       else if (profile.role === "hospital_admin") {
-        navigate(`/center/${profile.id}/dashboard`, { replace: true });
+        navigate(`/center/${profile._id}/dashboard`, { replace: true });
       }
 
       else {
