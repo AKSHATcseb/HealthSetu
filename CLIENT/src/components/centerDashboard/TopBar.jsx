@@ -1,4 +1,4 @@
-const TopBar = ( {hospitalName, email, phone, street, city, state, pincode} ) => {
+const TopBar = ( {hospitalName, email, phone, street, city, state, pincode, upiId} ) => {
   return (
     <div className="flex justify-between items-center">
       <div>
@@ -6,6 +6,7 @@ const TopBar = ( {hospitalName, email, phone, street, city, state, pincode} ) =>
         <div className="text-gray-500 text-sm"> {email} </div>
         <div className="text-gray-500 text-sm"> {phone} </div>
         <div className="text-gray-500 text-sm"> {street}, {city}, {state}, {pincode}  </div>
+        <div className="text-gray-500 text-sm"> {upiId}  </div>
       </div>
 
       <div className="flex items-center gap-4">

@@ -62,6 +62,7 @@ const Dashboard = () => {
           city={hospital?.address?.city}
           state={hospital?.address?.state}
           pincode={hospital?.address?.pincode}
+          upiId={hospital?.upiId}
         />
 
         {/* ================= STATS ================= */}

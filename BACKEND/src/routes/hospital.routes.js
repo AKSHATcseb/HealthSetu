@@ -128,6 +128,7 @@ router.get("/available-slot", async (req, res) => {
           _id: hospital._id,
           name: hospital.name,
           address: hospital.address,
+          upiId: hospital.upiId,
           availableMachines: freeMachines,
           cost:
             durationHours === 4
