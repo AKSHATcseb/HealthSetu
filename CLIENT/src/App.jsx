@@ -21,6 +21,7 @@ import NewBookingPage from './pages/Patient/NewBookingPage'
 import AvailableCenters from './pages/Patient/AvailableCenters'
 import ConfirmAppointment from './pages/Patient/ConfirmAppointment'
 import Payment from './pages/Patient/Payment'
+import CenterUpdateDetails from './pages/Center/CenterUpdateDetails'
 // import { Toaster } from 'react-hot-toast'
 
 
@@ -56,6 +57,7 @@ function App() {
         <Route path='/patient/profile/edit' element={<EditProfile />} />
         <Route path='/patient/bookappointment/searchresults' element={<AvailableCenters />} />
         <Route path='/patient/bookappointment/searchresults/confirm' element={<ConfirmAppointment />} />/
+        <Route path='/center/update' element={<CenterUpdateDetails />} />/
         <Route path='/confirm' element={<Payment />} />/
       </Routes>
     </>

@@ -1,18 +1,17 @@
-const TopBar = () => {
+const TopBar = ( {hospitalName, email, phone, street, city, state, pincode} ) => {
   return (
     <div className="flex justify-between items-center">
       <div>
-        <h2 className="text-2xl font-bold">Dashboard</h2>
-        <p className="text-slate-500 text-sm">
-          Overview of hospital resources and real-time machine status.
-        </p>
+        <h2 className="text-3xl font-bold mb-2">{hospitalName}</h2>
+        <div className="text-gray-500 text-sm"> {email} </div>
+        <div className="text-gray-500 text-sm"> {phone} </div>
+        <div className="text-gray-500 text-sm"> {street}, {city}, {state}, {pincode}  </div>
       </div>
 
       <div className="flex items-center gap-4">
         <span className="text-green-600 bg-green-50 px-4 py-1 rounded-full text-sm">
           ● System Online
         </span>
-        <div className="w-9 h-9 rounded-full bg-slate-200" />
       </div>
     </div>
   );

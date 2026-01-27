@@ -10,12 +10,12 @@ import {
 const menuItems = [
   {
     label: "Dashboard",
-    path: "/centerdashboard",
+    path: "/center/dashboard",
     icon: <LayoutDashboard size={18} />,
   },
   {
     label: "Update Details",
-    path: "/centerdetailsform",
+    path: "/center/update",
     icon: <Cpu size={18} />,
   },
   // {

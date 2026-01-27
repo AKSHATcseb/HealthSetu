@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { cancelAppointment } from "../../services/appointmentApi";
+
 
 const statusStyles = {
   reserved: {
@@ -94,7 +96,7 @@ export default function AppointmentCard({ appointment }) {
           {/* ACTIONS */}
           <div className="mt-6 flex gap-3 justify-end">
 
-            {appointment.paymentStatus === "pending" && (
+            {/* {appointment.paymentStatus === "pending" && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -103,7 +105,7 @@ export default function AppointmentCard({ appointment }) {
               >
                 Pay Now
               </motion.button>
-            )}
+            )} */}
 
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -118,11 +120,20 @@ export default function AppointmentCard({ appointment }) {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={async () => {
+                  try {
+                    await cancelAppointment(appointment._id);
+                    window.location.reload(); // quick refresh
+                  } catch (err) {
+                    alert("Failed to cancel appointment");
+                  }
+                }}
                 className="px-6 py-2 rounded-full border border-red-500 text-red-600"
               >
                 Cancel
               </motion.button>
             )}
+
           </div>
         </div>
 
